@@ -43,6 +43,9 @@ class AutomataApplication(Adw.Application):
         self.create_action("quit", lambda *_: self.quit(), ["<control>q"])
         self.create_action("about", self.on_about_action)
         self.create_action("preferences", self.on_preferences_action)
+        self.create_action(
+            "quick-capture", self.on_quick_capture_action, ["<control>n"]
+        )
 
         action = Gio.SimpleAction.new("show-toast", GLib.VariantType("s"))
         action.connect("activate", self.on_toast_action)
@@ -81,6 +84,12 @@ class AutomataApplication(Adw.Application):
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
         print("app.preferences action activated")
+
+    def on_quick_capture_action(self, widget, _):
+        """Callback for the app.quick-capture action."""
+        print("app.quick-capture action activated")
+        if win := self.get_active_window():
+            win.show_quick_capture()
 
     def on_toast_action(self, _action, param):
         """Callback for the toast action."""

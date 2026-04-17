@@ -8,25 +8,73 @@ template $AutomataWindow: Adw.ApplicationWindow {
   width-request: 360;
   height-request: 360;
 
-  content: Adw.ToolbarView {
-    [top]
-    Adw.HeaderBar {
-      [end]
-      MenuButton {
-        primary: true;
-        icon-name: "open-menu-symbolic";
-        tooltip-text: _("Main Menu");
-        menu-model: primary_menu;
+  ShortcutController {
+    scope: managed;
+
+    Shortcut {
+      action: 'activate';
+      trigger: '<Space>';
+    }
+  }
+
+  Adw.Breakpoint {
+    condition ("max-width: 600px")
+
+    setters {
+      split_view.collapsed: true;
+    }
+  }
+
+  content: Adw.ToastOverlay toast_overlay {
+    Adw.NavigationSplitView split_view {
+      show-content: true;
+      sidebar-width-fraction: 0.25;
+
+      [sidebar]
+      Adw.NavigationPage sidebar_page {
+        title: _("Sidebar");
+
+        Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            [end]
+            MenuButton {
+              primary: true;
+              icon-name: "open-menu-symbolic";
+              tooltip-text: _("Main Menu");
+              menu-model: primary_menu;
+            }
+          }
+
+          ListBox sidebar {
+            selection-mode: single;
+
+            styles [
+              "navigation-sidebar",
+            ]
+          }
+        }
+      }
+
+      Adw.NavigationPage content_page {
+        title: _("Сегодня");
+
+        Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {}
+
+          Stack view_stack {
+            transition-type: slide_up_down;
+          }
+
+          // Adw.StatusPage {
+          //   title: _("Automata");
+          //   icon-name: "com.tenderowl.automata";
+          //   description: _("Focus what matter");
+          // }
+        }
       }
     }
-
-    Adw.ToastOverlay toast_overlay {
-    Adw.StatusPage {
-      title: _("Automata");
-      icon-name: "com.tenderowl.automata";
-      description: _("Focus what matter");
-    }
-}
   };
 }
 
