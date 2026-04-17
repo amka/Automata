@@ -23,27 +23,34 @@
 # SPDX-License-Identifier: MIT
 
 import sys
-import gi
-
 from gettext import gettext as _
 
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
+import gi
 
-from gi.repository import Gtk, Gio, Adw
-from .window import AutomataWindow
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+
+from gi.repository import Adw, Gio, GLib, Gtk
+
+from automata.window import AutomataWindow
 
 
 class AutomataApplication(Adw.Application):
     """The main application singleton class."""
 
     def __init__(self):
-        super().__init__(application_id='com.tenderowl.automata',
-                         flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
-                         resource_base_path='/com/tenderowl/automata')
-        self.create_action('quit', lambda *_: self.quit(), ['<control>q'])
-        self.create_action('about', self.on_about_action)
-        self.create_action('preferences', self.on_preferences_action)
+        super().__init__(
+            application_id="com.tenderowl.automata",
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+            resource_base_path="/com/tenderowl/automata",
+        )
+        self.create_action("quit", lambda *_: self.quit(), ["<control>q"])
+        self.create_action("about", self.on_about_action)
+        self.create_action("preferences", self.on_preferences_action)
+
+        action = Gio.SimpleAction.new("show-toast", GLib.VariantType("s"))
+        action.connect("activate", self.on_toast_action)
+        self.add_action(action)
 
     def do_activate(self):
         """Called when the application is activated.
@@ -58,19 +65,26 @@ class AutomataApplication(Adw.Application):
 
     def on_about_action(self, *args):
         """Callback for the app.about action."""
-        about = Adw.AboutDialog(application_name='Automata',
-                                application_icon='com.tenderowl.automata',
-                                developer_name='Andrey Maksimov',
-                                version='0.1.0',
-                                # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
-                                translator_credits = _('translator-credits'),
-                                developers=['Andrey Maksimov'],
-                                copyright='© 2026 Andrey Maksimov')
+        about = Adw.AboutDialog(
+            application_name="Automata",
+            application_icon="com.tenderowl.automata",
+            developer_name="Andrey Maksimov",
+            version="0.1.0",
+            # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
+            translator_credits=_("translator-credits"),
+            developers=["Andrey Maksimov"],
+            copyright="© 2026 Andrey Maksimov",
+        )
         about.present(self.props.active_window)
 
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
-        print('app.preferences action activated')
+        print("app.preferences action activated")
+
+    def on_toast_action(self, _action, param):
+        """Callback for the toast action."""
+        if win := self.get_active_window():
+            win.show_toast(param.get_string())
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.

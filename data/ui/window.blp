@@ -5,6 +5,8 @@ template $AutomataWindow: Adw.ApplicationWindow {
   title: _("Automata");
   default-width: 800;
   default-height: 600;
+  width-request: 360;
+  height-request: 360;
 
   content: Adw.ToolbarView {
     [top]
@@ -18,13 +20,13 @@ template $AutomataWindow: Adw.ApplicationWindow {
       }
     }
 
-    content: Label label {
-      label: _("Hello, World!");
-
-      styles [
-        "title-1",
-      ]
-    };
+    Adw.ToastOverlay toast_overlay {
+    Adw.StatusPage {
+      title: _("Automata");
+      icon-name: "com.tenderowl.automata";
+      description: _("Focus what matter");
+    }
+}
   };
 }
 

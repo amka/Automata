@@ -22,14 +22,36 @@
 #
 # SPDX-License-Identifier: MIT
 
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, Gio, Gtk
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/window.ui")
 class AutomataWindow(Adw.ApplicationWindow):
     __gtype_name__ = "AutomataWindow"
 
-    label = Gtk.Template.Child()
+    toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
+    settings: Gio.Settings
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self._bind_settings()
+
+    def _bind_settings(self):
+        self.settings = Gio.Settings(schema_id="com.tenderowl.automata")
+        self.settings.bind(
+            "width", self, "default-width", Gio.SettingsBindFlags.DEFAULT
+        )
+        self.settings.bind(
+            "height", self, "default-height", Gio.SettingsBindFlags.DEFAULT
+        )
+        self.settings.bind(
+            "is-maximized", self, "maximized", Gio.SettingsBindFlags.DEFAULT
+        )
+        self.settings.bind(
+            "is-fullscreen", self, "fullscreened", Gio.SettingsBindFlags.DEFAULT
+        )
+
+    def show_toast(self, message: str):
+        toast = Adw.Toast.new(message)
+        self.toast_overlay.add_toast(toast)
