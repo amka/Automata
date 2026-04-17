@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.tenderowl.automata
+Exec=@bindir@/automata --gapplication-service
