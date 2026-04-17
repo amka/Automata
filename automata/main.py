@@ -25,15 +25,9 @@
 import sys
 from gettext import gettext as _
 
-import gi
-
-from automata.db.client import get_connection
-
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
-
 from gi.repository import Adw, Gio, GLib, Gtk
 
+from automata.db.client import DatabaseClient
 from automata.window import AutomataWindow
 
 
@@ -57,7 +51,7 @@ class AutomataApplication(Adw.Application):
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
 
-        get_connection()
+        DatabaseClient()
 
     def do_activate(self):
         """Called when the application is activated.
