@@ -27,6 +27,8 @@ from gettext import gettext as _
 
 import gi
 
+from automata.db.client import get_connection
+
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
@@ -51,6 +53,11 @@ class AutomataApplication(Adw.Application):
         action = Gio.SimpleAction.new("show-toast", GLib.VariantType("s"))
         action.connect("activate", self.on_toast_action)
         self.add_action(action)
+
+    def do_startup(self) -> None:
+        Adw.Application.do_startup(self)
+
+        get_connection()
 
     def do_activate(self):
         """Called when the application is activated.
