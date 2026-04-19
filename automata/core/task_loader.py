@@ -6,11 +6,11 @@ from typing import Callable
 from gi.repository import GLib
 from loguru import logger
 
-from automata.db.repo import TaskDAO
+# from automata.db.repo import TaskDAO
 
 
 class TaskLoader:
-    def __init__(self, dao: TaskDAO):
+    def __init__(self, dao):
         self.dao = dao
         self._executor = ThreadPoolExecutor(max_workers=2)
 

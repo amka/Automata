@@ -1,0 +1,7 @@
+loguru==0.7.3
+tortoise-orm==1.1.7
+pypika-tortoise==0.6.5
+iso8601==2.1.0
+aiosqlite==0.22.1
+anyio==4.13.0
+idna==3.11

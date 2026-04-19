@@ -27,7 +27,6 @@ import threading
 from gi.repository import Adw, Gio, GLib, Gtk
 
 from automata.core.parser import parse_quick
-from automata.db.client import DatabaseClient
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/inbox.ui")

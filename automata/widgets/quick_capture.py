@@ -31,7 +31,6 @@ import threading
 from gi.repository import Adw, Gio, GLib, Gtk
 
 from automata.core.parser import parse_quick
-from automata.db.client import DatabaseClient
 
 
 class QuickCapture(Adw.Window):
@@ -40,7 +39,6 @@ class QuickCapture(Adw.Window):
         self.set_title("⚡ Quick Capture")
         self.set_default_size(520, 110)
 
-        self.db = DatabaseClient()
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 
         self.entry = Adw.EntryRow(title="Задача: #теги !приоритет @исполнитель дата")

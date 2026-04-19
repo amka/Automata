@@ -22,8 +22,10 @@
 #
 # SPDX-License-Identifier: MIT
 
-from dataclasses import dataclass, field
+from datetime import date, datetime
 from typing import List
+
+from tortoise import fields, models
 
 
 # Task (ежедневные задачи + подзадачи проектов)
@@ -49,26 +51,34 @@ from typing import List
 #     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 #     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 # );
-@dataclass
-class Task:
-    id: int | None = None
-    title: str = ""
-    description: str | None = None
-    status: str = "todo"  # 'todo', 'in_progress', 'done', 'blocked', 'cancelled'
-    priority: int = 3  # 1=highest, 4=lowest
-    eisenhower: str | None = None  # 'do', 'schedule', 'delegate', 'delete' (или NULL)
-    due_date: str | None = None
-    start_date: str | None = None
-    completed_at: str | None = None
-    assignee: str | None = None
-    project_id: int | None = None
-    parent_task_id: int | None = None
-    time_estimate: int | None = None
-    time_spent: int = 0
-    is_recurring: bool = False
+class Task(models.Model):
+    id = fields.IntField(primary_key=True)
+    title = fields.TextField()
+    description = fields.TextField(null=True)
+    status = fields.TextField(
+        default="todo"
+    )  # 'todo', 'in_progress', 'done', 'blocked', 'cancelled'
+    priority = fields.IntField(default=3)  # 1=highest, 4=lowest
+    eisenhower = fields.TextField(
+        null=True
+    )  # 'do', 'schedule', 'delegate', 'delete' (или NULL)
+    due_date = fields.TextField(null=True)
+    start_date = fields.TextField(null=True)
+    completed_at = fields.DatetimeField(null=True)
+    assignee = fields.TextField(null=True)
+    project_id = fields.ForeignKeyField("models.Project", null=True)
+    parent_task_id = fields.IntField(null=True)
+    time_estimate = fields.IntField(null=True)
+    time_spent = fields.IntField(default=0)
+    is_recurring = fields.BooleanField(default=False)
     recurrence_rule: str | None = None
     jira_key: str | None = None
     incident_id: str | None = None
-    tags: List[str] = field(default_factory=list)
-    created_at: str | None = None
-    updated_at: str | None = None
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    class Meta:
+        table = "tasks"
+
+    def __str__(self):
+        return self.title

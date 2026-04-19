@@ -26,7 +26,6 @@ import threading
 from pathlib import Path
 from typing import Optional
 
-import turso
 from gi.repository import GLib
 from loguru import logger
 

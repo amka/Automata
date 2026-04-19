@@ -22,8 +22,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-from dataclasses import dataclass, field
-
+from tortoise import fields, models
 
 # 4. Calendar Events (встречи + timeblocking)
 # CREATE TABLE events (
@@ -37,15 +36,16 @@ from dataclasses import dataclass, field
 #     extracted_task_ids TEXT,                              -- JSON array
 #     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 # );
-@dataclass
-class Note:
-    id: int | None = None
-    title: str = ""
-    start_time: str | None = None
-    end_time: str | None = None
-    description: str | None = None
-    is_meeting: bool | None = None
-    notes: str | None = None
-    extracted_task_ids: list[int] | None = field(default_factory=list)
-    created_at: str | None = None
-    updated_at: str | None = None
+
+
+class Note(models.Model):
+    id = fields.IntField(pk=True)
+    title = fields.TextField()
+    start_time = fields.TextField(null=True)
+    end_time = fields.TextField(null=True)
+    description = fields.TextField(null=True)
+    is_meeting = fields.BooleanField(null=True)
+    notes = fields.TextField(null=True)
+    extracted_task_ids = fields.JSONField(null=True)
+    created_at = fields.TextField(null=True)
+    updated_at = fields.TextField(null=True)

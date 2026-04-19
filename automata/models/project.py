@@ -22,9 +22,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-from dataclasses import dataclass, field
-from imaplib import Commands
-from typing import List
+from tortoise import fields, models
 
 
 # -- 1. Projects (высокоуровневые инициативы, которые ты контролируешь)
@@ -44,19 +42,21 @@ from typing import List
 #     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 #     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 # );
-@dataclass
-class Project:
-    id: int | None = None
-    name: str = ""
-    description: str | None = None
-    status: str = "active"  # 'active', 'on_hold', 'completed', 'cancelled'
-    priority: int = 3  # 1=highest, 4=lowest
-    start_date: str | None = None
-    target_date: str | None = None
-    completed_at: str | None = None
-    progress: float = 0.0  # 0-100, рассчитывается или вручную
-    jira_board_key: str | None = None  # "PROJ-123"
-    gitlab_group_id: str | None = None
-    grafana_dashboard_url: str | None = None
-    created_at: str | None = None
-    updated_at: str | None = None
+class Project(models.Model):
+    id = fields.IntField(pk=True)
+    name = fields.TextField()
+    description = fields.TextField(null=True)
+    status = fields.TextField(
+        default="active"
+    )  # 'active', 'on_hold', 'completed', 'cancelled'
+    priority = fields.IntField(default=3)  # 1=highest, 4=lowest
+    start_date = fields.TextField(null=True)
+    target_date = fields.TextField(null=True)
+    completed_at = fields.TextField(null=True)
+    progress = fields.FloatField(default=0.0)  # 0-100, рассчитывается или вручную
+    jira_board_key = fields.TextField(null=True)  # "PROJ-123"
+    gitlab_group_id = fields.TextField(null=True)
+    grafana_dashboard_url = fields.TextField(null=True)
+    tasks = fields.ReverseRelation["Task"]
+    created_at = fields.TextField(null=True)
+    updated_at = fields.TextField(null=True)

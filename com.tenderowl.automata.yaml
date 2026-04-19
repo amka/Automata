@@ -20,7 +20,7 @@ cleanup:
   - "*.la"
   - "*.a"
 modules:
-  - "python3-modules.yaml"
+  - "modules.yaml"
   - name: "automata"
     builddir: true
     buildsystem: "meson"

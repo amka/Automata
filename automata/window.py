@@ -22,15 +22,13 @@
 #
 # SPDX-License-Identifier: MIT
 
+import asyncio
 from typing import Dict
 
 from gi.repository import Adw, Gio, Gtk
 from loguru import logger
+from tortoise import Tortoise
 
-from automata.core.task_loader import TaskLoader
-from automata.db.client import DatabaseClient
-from automata.db.repo import TaskDAO
-from automata.models.task import Task
 from automata.widgets.dashboard import DashboardPage
 from automata.widgets.inbox import InboxPage
 from automata.widgets.quick_capture import QuickCapture
@@ -53,9 +51,6 @@ class AutomataWindow(Adw.ApplicationWindow):
         super().__init__(**kwargs)
 
         # Инициализация слоёв
-        self.db = DatabaseClient()
-        self.dao = TaskDAO(self.db)
-        self.loader = TaskLoader(self.dao)
         self.quick_capture = QuickCapture()
 
         # Хранилище UI-состояния
@@ -63,7 +58,7 @@ class AutomataWindow(Adw.ApplicationWindow):
 
         self._build_ui()
         self._setup_shortcuts()
-        self._load_view("today")
+        # self._load_view("today")
 
         self._bind_settings()
 
@@ -82,6 +77,15 @@ class AutomataWindow(Adw.ApplicationWindow):
             "is-fullscreen", self, "fullscreened", Gio.SettingsBindFlags.DEFAULT
         )
 
+    def do_close_request(self) -> bool:
+        async def shutdown():
+            await Tortoise.close_connections()
+            # Останавливаем основной цикл, если нужно
+            logger.info("Tortoise-ORM shutdown")
+
+        asyncio.create_task(shutdown())
+        return False
+
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
         self.toast_overlay.add_toast(toast)
@@ -95,7 +99,7 @@ class AutomataWindow(Adw.ApplicationWindow):
             ("today", "Today", "Сегодня"),
             ("upcoming", "Upcoming", "Ближайшие задачи"),
             ("tasks", "Tasks", ""),
-            ("projects", "Projects", ""),
+            ("projects", "Projects", None),
             ("calendar", "Calendar", ""),
             ("notes", "Notes", ""),
             ("oversight", "Oversight", "Контроль команд / проектов"),

@@ -22,17 +22,26 @@
 #
 # SPDX-License-Identifier: MIT
 
+import asyncio
 import sys
 from gettext import gettext as _
+from pathlib import Path
+
+from gi.events import GLibEventLoopPolicy
+
+asyncio.set_event_loop_policy(GLibEventLoopPolicy())
 
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
+from tortoise import Tortoise, run_async
 
-from automata.db.client import DatabaseClient
+# from automata.db.client import DatabaseClient
 from automata.window import AutomataWindow
 
 
 class AutomataApplication(Adw.Application):
     """The main application singleton class."""
+
+    __gtype_name__ = "AutomataApplication"
 
     def __init__(self):
         super().__init__(
@@ -54,8 +63,6 @@ class AutomataApplication(Adw.Application):
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
 
-        DatabaseClient()
-
         self.load_resources()
 
     def do_activate(self):
@@ -68,6 +75,21 @@ class AutomataApplication(Adw.Application):
         if not win:
             win = AutomataWindow(application=self)
         win.present()
+
+        # Initialize database after window is shown
+        run_async(self._init_db())
+
+    async def _init_db(self):
+        # Here we connect to a SQLite DB file.
+        # also specify the app name of "models"
+        # which contain models from "automata.db
+        db_path = Path(GLib.get_user_data_dir()) / "automata.db"
+        await Tortoise.init(
+            db_url=f"sqlite://{db_path}", modules={"models": ["automata.models"]}
+        )
+        await Tortoise.generate_schemas(safe=True)
+
+        GLib.idle_add(self.get_active_window().show_toast, "Database initialized")
 
     def load_resources(self):
         provider = Gtk.CssProvider()
@@ -124,5 +146,6 @@ class AutomataApplication(Adw.Application):
 
 def main(version):
     """The application's entry point."""
+
     app = AutomataApplication()
     return app.run(sys.argv)
