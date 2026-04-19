@@ -25,7 +25,7 @@
 import sys
 from gettext import gettext as _
 
-from gi.repository import Adw, Gio, GLib, Gtk
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
 from automata.db.client import DatabaseClient
 from automata.window import AutomataWindow
@@ -56,6 +56,8 @@ class AutomataApplication(Adw.Application):
 
         DatabaseClient()
 
+        self.load_resources()
+
     def do_activate(self):
         """Called when the application is activated.
 
@@ -66,6 +68,14 @@ class AutomataApplication(Adw.Application):
         if not win:
             win = AutomataWindow(application=self)
         win.present()
+
+    def load_resources(self):
+        provider = Gtk.CssProvider()
+        provider.load_from_resource("/com/tenderowl/automata/automata.css")
+        if display := Gdk.Display.get_default():
+            Gtk.StyleContext.add_provider_for_display(
+                display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            )
 
     def on_about_action(self, *args):
         """Callback for the app.about action."""

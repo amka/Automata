@@ -22,7 +22,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-from termios import VINTR
 from typing import Dict
 
 from gi.repository import Adw, Gio, Gtk
@@ -32,7 +31,8 @@ from automata.core.task_loader import TaskLoader
 from automata.db.client import DatabaseClient
 from automata.db.repo import TaskDAO
 from automata.models.task import Task
-from automata.widgets.dashboard import Dashboard
+from automata.widgets.dashboard import DashboardPage
+from automata.widgets.inbox import InboxPage
 from automata.widgets.quick_capture import QuickCapture
 
 
@@ -108,11 +108,16 @@ class AutomataWindow(Adw.ApplicationWindow):
             self.sidebar.append(row)
 
         # CONTENT
-        dashboard = Dashboard()
+        dashboard = DashboardPage()
+        dashboard.view_id = "dashboard"
         self.view_stack.add_titled(dashboard, "dashboard", "Dashboard")
 
+        inbox = InboxPage()
+        inbox.view_id = "inbox"
+        self.view_stack.add_titled(inbox, "inbox", "Inbox")
+
         # Создаём страницы-списки
-        for view_id in ["today", "inbox", "matrix", "delegated", "projects"]:
+        for view_id in ["today", "matrix", "delegated", "projects"]:
             page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             page.set_spacing(8)
             page.set_margin_start(12)

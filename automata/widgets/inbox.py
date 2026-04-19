@@ -30,9 +30,9 @@ from automata.core.parser import parse_quick
 from automata.db.client import DatabaseClient
 
 
-@Gtk.Template(resource_path="/com/tenderowl/automata/ui/dashboard.ui")
-class DashboardPage(Gtk.Box):
-    __gtype_name__ = "Dashboard"
+@Gtk.Template(resource_path="/com/tenderowl/automata/ui/inbox.ui")
+class InboxPage(Gtk.Box):
+    __gtype_name__ = "Inbox"
 
     def __init__(self):
         super().__init__()

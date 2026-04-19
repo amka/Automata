@@ -1,0 +1,84 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Inbox: Box {
+  orientation: vertical;
+  spacing: 12;
+  margin-end: 12;
+  margin-top: 12;
+  margin-start: 12;
+  margin-bottom: 12;
+
+  Adw.Clamp {
+    maximum-size: 800;
+
+    Grid eisenhouer_matrix {
+      column-homogeneous: true;
+      row-homogeneous: true;
+      column-spacing: 12;
+      row-spacing: 12;
+
+      Adw.Bin {
+        name: "quadrant-1";
+
+        Label {
+          label: _("Do");
+
+          styles [
+            "title-2",
+            "quadrant",
+          ]
+        }
+      }
+
+      Adw.Bin {
+        name: "quadrant-2";
+
+        Label {
+          label: _("Schedule");
+
+          styles [
+            "title-2",
+            "quadrant",
+          ]
+        }
+      }
+
+      Adw.Bin {
+        name: "quadrant-3";
+
+        Label {
+          label: _("Delegate");
+
+          styles [
+            "title-2",
+            "quadrant",
+          ]
+        }
+      }
+
+      Adw.Bin {
+        name: "quadrant-4";
+
+        Label {
+          label: _("Archive");
+
+          styles [
+            "title-2",
+            "quadrant",
+          ]
+        }
+      }
+    }
+  }
+
+  ScrolledWindow {
+    vexpand: true;
+
+    Adw.ClampScrollable {
+      maximum-size: 800;
+
+      ListView task_list_view {}
+    }
+  }
+}

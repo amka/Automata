@@ -1,0 +1,32 @@
+.quadrant {
+    padding: 1.5pt;
+    border-radius: var(--window-radius);
+}
+
+#quadrant-1 {
+    background-color: var(--error-bg-color);
+    color: var(--error-fg-color);
+    padding: 1.5pt;
+    border-radius: var(--window-radius);
+}
+
+#quadrant-2 {
+    background-color: var(--warning-bg-color);
+    color: var(--warning-fg-color);
+    padding: 1.5pt;
+    border-radius: var(--window-radius);
+}
+
+#quadrant-3 {
+    background-color: var(--accent-bg-color);
+    color: var(--accent-fg-color);
+    padding: 1.5pt;
+    border-radius: var(--window-radius);
+}
+
+#quadrant-4 {
+    background-color: var(--view-bg-color);
+    color: var(--view-fg-color);
+    padding: 1.5pt;
+    border-radius: var(--window-radius);
+}
