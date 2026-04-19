@@ -32,6 +32,7 @@ from automata.core.task_loader import TaskLoader
 from automata.db.client import DatabaseClient
 from automata.db.repo import TaskDAO
 from automata.models.task import Task
+from automata.widgets.dashboard import Dashboard
 from automata.widgets.quick_capture import QuickCapture
 
 
@@ -107,6 +108,8 @@ class AutomataWindow(Adw.ApplicationWindow):
             self.sidebar.append(row)
 
         # CONTENT
+        dashboard = Dashboard()
+        self.view_stack.add_titled(dashboard, "dashboard", "Dashboard")
 
         # Создаём страницы-списки
         for view_id in ["today", "inbox", "matrix", "delegated", "projects"]:
