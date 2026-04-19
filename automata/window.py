@@ -89,18 +89,22 @@ class AutomataWindow(Adw.ApplicationWindow):
         self.sidebar.connect("row-activated", self._on_sidebar_activated)
 
         views = [
-            ("today", "📅 Сегодня", "Сфокусированный список на день"),
-            ("inbox", "📥 Inbox", "Сырой поток задач"),
-            ("matrix", "📊 Матрица", "4 квадранта приоритетов"),
-            ("delegated", "⏳ Ожидание", "Делегировано и на контроле"),
-            ("projects", "🗺️ Проекты", "Радар инициатив"),
+            ("dashboard", "Dashboard", "Сфокусированный список на день"),
+            ("inbox", "Inbox", "Сырой поток задач"),
+            ("today", "Today", "Сегодня"),
+            ("upcoming", "Upcoming", "Ближайшие задачи"),
+            ("tasks", "Tasks", ""),
+            ("projects", "Projects", ""),
+            ("calendar", "Calendar", ""),
+            ("notes", "Notes", ""),
+            ("oversight", "Oversight", "Контроль команд / проектов"),
+            ("reports", "Reports", ""),
         ]
         for view_id, title, desc in views:
             row = Adw.ActionRow(title=title, subtitle=desc)
             row.set_activatable(True)
             row.view_id = view_id
             self.sidebar.append(row)
-            setattr(self, f"nav_{view_id}", row)
 
         # CONTENT
 

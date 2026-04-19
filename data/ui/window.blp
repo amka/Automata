@@ -37,6 +37,17 @@ template $AutomataWindow: Adw.ApplicationWindow {
         Adw.ToolbarView {
           [top]
           Adw.HeaderBar {
+            [start]
+            Adw.SplitButton {
+              Adw.ButtonContent {
+                label: _("New Task");
+                icon-name: "list-add-symbolic";
+              }
+
+              action-name: "app.task.create";
+              menu-model: create_menu;
+            }
+
             [end]
             MenuButton {
               primary: true;
@@ -93,6 +104,20 @@ menu primary_menu {
     item {
       label: _("_About Automata");
       action: "app.about";
+    }
+  }
+}
+
+menu create_menu {
+  section {
+    item {
+      label: _("New Project");
+      action: "app.project.create";
+    }
+
+    item {
+      label: _("New Note");
+      action: "app.note.create";
     }
   }
 }
