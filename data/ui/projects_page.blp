@@ -1,9 +1,10 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $ProjectsPage: Box {
-  orientation: vertical;
-  spacing: 12;
+template $ProjectsPage: Adw.NavigationPage {
+  // orientation: vertical;
+  // spacing: 12;
+  title: _("Projects");
 
   ScrolledWindow {
     vexpand: true;

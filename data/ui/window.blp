@@ -19,8 +19,8 @@ template $AutomataWindow: Adw.ApplicationWindow {
   }
 
   content: Adw.ToastOverlay toast_overlay {
-    Adw.NavigationSplitView split_view {
-      show-content: true;
+    Adw.OverlaySplitView split_view {
+      // show-content: true;
       sidebar-width-fraction: 0.25;
 
       [sidebar]
@@ -69,7 +69,8 @@ template $AutomataWindow: Adw.ApplicationWindow {
           Adw.HeaderBar {}
 
           Stack view_stack {
-            transition-type: rotate_left_right;
+            transition-duration: 50;
+            transition-type: crossfade;
           }
 
           // Adw.StatusPage {

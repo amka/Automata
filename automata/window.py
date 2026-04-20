@@ -29,6 +29,7 @@ from typing import Dict
 from gi.repository import Adw, Gio, Gtk
 from loguru import logger
 
+from automata.services.project_service import project_service
 from automata.widgets.dashboard import DashboardPage
 from automata.widgets.inbox import InboxPage
 from automata.widgets.projects_page import ProjectsPage
@@ -41,7 +42,7 @@ class AutomataWindow(Adw.ApplicationWindow):
 
     shortcut_controller: Gtk.ShortcutController = Gtk.Template.Child()
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
-    split_view: Adw.NavigationSplitView = Gtk.Template.Child()
+    split_view: Adw.OverlaySplitView = Gtk.Template.Child()
     sidebar_page: Adw.NavigationPage = Gtk.Template.Child()
     sidebar: Gtk.ListBox = Gtk.Template.Child()
     content_page: Adw.NavigationPage = Gtk.Template.Child()
@@ -270,6 +271,7 @@ class AutomataWindow(Adw.ApplicationWindow):
     def show_project_add(self):
         logger.debug("Show project add dialog")
         self.show_toast("📝 Добавить проект")
+        self.show_create_dialog()
 
     def show_project_edit(self):
         logger.debug("Show project edit dialog")
@@ -278,3 +280,26 @@ class AutomataWindow(Adw.ApplicationWindow):
     def show_project_delete(self):
         logger.debug("Show project delete dialog")
         self.show_toast("🗑️ Удалить проект")
+
+    def show_create_dialog(self):
+        # Будем вызывать из главного окна или через action
+        dialog: Adw.AlertDialog = Adw.AlertDialog(
+            heading="Новый проект",
+            body="Введите название проекта",
+        )
+        # dialog.add_responses("cancel", "Отмена", "create", "Создать")
+        dialog.add_response("create", "Создать")
+        dialog.add_response("cancel", "Отмена")
+        dialog.set_response_appearance("create", Adw.ResponseAppearance.SUGGESTED)
+
+        entry = Gtk.Entry(placeholder_text="Название проекта...")
+        dialog.set_extra_child(entry)
+
+        def on_response(dlg, resp):
+            if resp == "create":
+                if name := entry.get_text().strip():
+                    project_service.create_project(name=name)
+            dlg.close()
+
+        dialog.connect("response", on_response)
+        dialog.present(self)
