@@ -1,3 +1,5 @@
+from datetime import date
+
 from loguru import logger
 from peewee import SqliteDatabase
 
@@ -9,6 +11,12 @@ def init_db():
     db.connect()
     db.create_tables([Project, Task, Note], safe=True)
     logger.debug("✅ Peewee + SQLite инициализирован")
+    if Project.select().count() == 0:
+        Project.create(
+            name="Пример: Миграция на новую базу данных",
+            target_date=date(2026, 6, 30),
+            order_index=0,
+        )
     return db
 
 

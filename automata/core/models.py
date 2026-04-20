@@ -25,6 +25,7 @@ class BaseModel(pw.Model):
 
 
 class Project(BaseModel):
+    id = pw.AutoField()
     name = pw.CharField(max_length=255, index=True)
     description = pw.TextField(null=True)
     status = pw.CharField(max_length=20, default="active")
@@ -37,11 +38,18 @@ class Project(BaseModel):
     gitlab_group_id = pw.CharField(max_length=100, null=True)
     grafana_url = pw.CharField(max_length=500, null=True)
 
+    # Для ручной сортировки (drag-and-drop)
+    order_index = pw.IntegerField(default=0, index=True)
+
     created_at = pw.DateTimeField(default=datetime.now)
     updated_at = pw.DateTimeField(default=datetime.now)
 
     class Meta:
         table_name = "projects"
+        order_by = ("order_index", "target_date")  # дефолтная сортировка
+
+    def __str__(self):
+        return f"<{self.id}: {self.name}>"
 
 
 class Task(BaseModel):

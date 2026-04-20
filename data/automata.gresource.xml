@@ -5,6 +5,7 @@
     <file preprocess="xml-stripblanks">ui/dashboard.ui</file>
     <file preprocess="xml-stripblanks">ui/inbox.ui</file>
     <file preprocess="xml-stripblanks">ui/task_list_row.ui</file>
+    <file preprocess="xml-stripblanks">ui/projects_page.ui</file>
     <file preprocess="xml-stripblanks">ui/shortcuts-dialog.ui</file>
     <file>automata.css</file>
   </gresource>

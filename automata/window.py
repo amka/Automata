@@ -31,6 +31,7 @@ from loguru import logger
 
 from automata.widgets.dashboard import DashboardPage
 from automata.widgets.inbox import InboxPage
+from automata.widgets.projects_page import ProjectsPage
 from automata.widgets.quick_capture import QuickAddDialog
 
 
@@ -129,8 +130,11 @@ class AutomataWindow(Adw.ApplicationWindow):
         inbox.view_id = "inbox"
         self.view_stack.add_titled(inbox, "inbox", "Inbox")
 
+        projects_view = ProjectsPage()
+        self.view_stack.add_titled(projects_view, "projects", "Projects")
+
         # Создаём страницы-списки
-        for view_id in ["today", "matrix", "delegated", "projects"]:
+        for view_id in ["today", "matrix", "delegated"]:
             page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             page.set_spacing(8)
             page.set_margin_start(12)
@@ -262,3 +266,15 @@ class AutomataWindow(Adw.ApplicationWindow):
     def show_quick_capture(self):
         quick_capture = QuickAddDialog()
         quick_capture.present(self)
+
+    def show_project_add(self):
+        logger.debug("Show project add dialog")
+        self.show_toast("📝 Добавить проект")
+
+    def show_project_edit(self):
+        logger.debug("Show project edit dialog")
+        self.show_toast("✏️ Редактировать проект")
+
+    def show_project_delete(self):
+        logger.debug("Show project delete dialog")
+        self.show_toast("🗑️ Удалить проект")

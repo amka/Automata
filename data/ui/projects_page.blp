@@ -1,0 +1,30 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $ProjectsPage: Box {
+  orientation: vertical;
+  spacing: 12;
+
+  ScrolledWindow {
+    vexpand: true;
+
+    Adw.ClampScrollable {
+      maximum-size: 800;
+
+      ListView list_view {
+        factory: SignalListItemFactory {
+          setup => $_setup_list_row();
+          bind => $_bind_list_row();
+        };
+
+        model: SingleSelection selection_model {
+          selection-changed => $_on_project_selected();
+        };
+
+        styles [
+          "navigation-sidebar",
+        ]
+      }
+    }
+  }
+}

@@ -55,10 +55,17 @@ class AutomataApplication(Adw.Application):
         self.create_action(
             "quick-capture", self.on_quick_capture_action, ["<control>n"]
         )
+        self.create_action("project.create", self._on_project_create_action)
+        self.create_action("project.edit", self._on_project_edit_action)
+        self.create_action("project.delete", self._on_project_delete_action)
 
         action = Gio.SimpleAction.new("show-toast", GLib.VariantType("s"))
         action.connect("activate", self.on_toast_action)
         self.add_action(action)
+
+    @property
+    def active_window(self) -> AutomataWindow | None:
+        return self.get_active_window()
 
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
@@ -111,14 +118,28 @@ class AutomataApplication(Adw.Application):
 
     def on_quick_capture_action(self, widget, _):
         """Callback for the app.quick-capture action."""
-        print("app.quick-capture action activated")
-        if win := self.get_active_window():
-            win.show_quick_capture()
+        if self.active_window:
+            self.active_window.show_quick_capture()
+
+    def _on_project_create_action(self, widget, _):
+        """Callback for the project.add action."""
+        if self.active_window:
+            self.active_window.show_project_add()
+
+    def _on_project_edit_action(self, widget, _):
+        """Callback for the project.edit action."""
+        if self.active_window:
+            self.active_window.show_project_edit()
+
+    def _on_project_delete_action(self, widget, _):
+        """Callback for the project.delete action."""
+        if self.active_window:
+            self.active_window.show_project_delete()
 
     def on_toast_action(self, _action, param):
         """Callback for the toast action."""
-        if win := self.get_active_window():
-            win.show_toast(param.get_string())
+        if self.active_window:
+            self.active_window.show_toast(param.get_string())
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
