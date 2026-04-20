@@ -22,22 +22,23 @@
 #
 # SPDX-License-Identifier: MIT
 
-import asyncio
+from dis import hasarg
+from textwrap import shorten
 from typing import Dict
 
 from gi.repository import Adw, Gio, Gtk
 from loguru import logger
-from tortoise import Tortoise
 
 from automata.widgets.dashboard import DashboardPage
 from automata.widgets.inbox import InboxPage
-from automata.widgets.quick_capture import QuickCapture
+from automata.widgets.quick_capture import QuickAddDialog
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/window.ui")
 class AutomataWindow(Adw.ApplicationWindow):
     __gtype_name__ = "AutomataWindow"
 
+    shortcut_controller: Gtk.ShortcutController = Gtk.Template.Child()
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
     split_view: Adw.NavigationSplitView = Gtk.Template.Child()
     sidebar_page: Adw.NavigationPage = Gtk.Template.Child()
@@ -50,9 +51,6 @@ class AutomataWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Инициализация слоёв
-        self.quick_capture = QuickCapture()
-
         # Хранилище UI-состояния
         self.task_widgets: Dict[int, Gtk.ListBoxRow] = {}
 
@@ -60,7 +58,18 @@ class AutomataWindow(Adw.ApplicationWindow):
         self._setup_shortcuts()
         # self._load_view("today")
 
+        # Init shortcut controller
+        trigger = Gtk.ShortcutTrigger.parse_string("a")
+        action = Gtk.CallbackAction.new(lambda *args: self.show_quick_add())
+        shortcut = Gtk.Shortcut.new(trigger, action)
+        self.shortcut_controller.add_shortcut(shortcut)
+
         self._bind_settings()
+
+    def show_quick_add(self):
+        logger.info("Show quick add dialog")
+        dlg = QuickAddDialog()
+        dlg.present(self)
 
     def _bind_settings(self):
         self.settings = Gio.Settings(schema_id="com.tenderowl.automata")
@@ -77,14 +86,14 @@ class AutomataWindow(Adw.ApplicationWindow):
             "is-fullscreen", self, "fullscreened", Gio.SettingsBindFlags.DEFAULT
         )
 
-    def do_close_request(self) -> bool:
-        async def shutdown():
-            await Tortoise.close_connections()
-            # Останавливаем основной цикл, если нужно
-            logger.info("Tortoise-ORM shutdown")
+    # def do_close_request(self) -> bool:
+    #     async def shutdown():
+    #         await Tortoise.close_connections()
+    #         # Останавливаем основной цикл, если нужно
+    #         logger.info("Tortoise-ORM shutdown")
 
-        asyncio.create_task(shutdown())
-        return False
+    #     asyncio.create_task(shutdown())
+    #     return False
 
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
@@ -173,20 +182,25 @@ class AutomataWindow(Adw.ApplicationWindow):
         self.content_page.set_title(titles.get(view_id, view_id))
         self.view_stack.set_visible_child_name(view_id)
 
+        # Populate widget asyncronously if available
+        child = self.view_stack.get_child_by_name(view_id)
+        if hasattr(child, "populate"):
+            child.populate()
+
         # Выделяем навигацию
         # for row in self.sidebar:
         #     row.set_selected(False)
 
         # Асинхронная загрузка
-        current_list = getattr(self, f"list_{view_id}")
-        current_list.remove_all()
-        self.task_widgets.clear()
+        # current_list = getattr(self, f"list_{view_id}")
+        # current_list.remove_all()
+        # self.task_widgets.clear()
 
-        self.loader.load_async(
-            quadrant=filters[view_id]["quadrant"],
-            status=filters[view_id]["status"],
-            callback=lambda tasks: self._render_tasks(tasks, current_list, view_id),
-        )
+        # self.loader.load_async(
+        #     quadrant=filters[view_id]["quadrant"],
+        #     status=filters[view_id]["status"],
+        #     callback=lambda tasks: self._render_tasks(tasks, current_list, view_id),
+        # )
 
     def _render_tasks(self, tasks: list, listbox: Gtk.ListBox, view_id: str):
         for t in tasks:
@@ -246,5 +260,5 @@ class AutomataWindow(Adw.ApplicationWindow):
         self.toast_overlay.add_toast(Adw.Toast(title=msg, timeout=2))
 
     def show_quick_capture(self):
-        self.quick_capture.show()
-        self.quick_capture.present()
+        quick_capture = QuickAddDialog()
+        quick_capture.present(self)

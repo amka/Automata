@@ -26,12 +26,35 @@ import threading
 
 from gi.repository import Adw, Gio, GLib, Gtk
 
-from automata.core.parser import parse_quick
+from automata.services import TaskService
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/dashboard.ui")
 class DashboardPage(Gtk.Box):
     __gtype_name__ = "Dashboard"
 
+    task_list_view: Gtk.ListView = Gtk.Template.Child()
+    selection: Gtk.SingleSelection = Gtk.Template.Child()
+
     def __init__(self):
         super().__init__()
+
+        self.task_model = Gio.ListStore()
+        self.selection.set_model(self.task_model)
+
+    def load_today_tasks(self):
+        # asyncio.create_task(self._load_tasks())
+        pass
+
+    async def _load_tasks(self):
+        tasks = await TaskService.get_today_tasks()
+
+        # Обновляем UI только в главном потоке
+        GLib.idle_add(self._update_task_list, tasks)
+
+    def _update_task_list(self, tasks):
+        # очищаем список и добавляем задачи
+        self.task_model.remove_all()
+        for task in tasks:
+            self.task_model.append(task.title)
+        return False  # обязательно для idle_add

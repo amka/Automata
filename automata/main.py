@@ -22,19 +22,16 @@
 #
 # SPDX-License-Identifier: MIT
 
-import asyncio
+
 import sys
 from gettext import gettext as _
 from pathlib import Path
 
-from gi.events import GLibEventLoopPolicy
-
-asyncio.set_event_loop_policy(GLibEventLoopPolicy())
-
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
-from tortoise import Tortoise, run_async
+from loguru import logger
 
 # from automata.db.client import DatabaseClient
+from automata.core.database import close_db, init_db
 from automata.window import AutomataWindow
 
 
@@ -49,6 +46,9 @@ class AutomataApplication(Adw.Application):
             flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
             resource_base_path="/com/tenderowl/automata",
         )
+
+        self.connect("shutdown", self.on_shutdown)
+
         self.create_action("quit", lambda *_: self.quit(), ["<control>q"])
         self.create_action("about", self.on_about_action)
         self.create_action("preferences", self.on_preferences_action)
@@ -62,8 +62,11 @@ class AutomataApplication(Adw.Application):
 
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
+        logger.info("🚀 Application startup")
 
         self.load_resources()
+
+        init_db()
 
     def do_activate(self):
         """Called when the application is activated.
@@ -76,20 +79,9 @@ class AutomataApplication(Adw.Application):
             win = AutomataWindow(application=self)
         win.present()
 
-        # Initialize database after window is shown
-        run_async(self._init_db())
-
-    async def _init_db(self):
-        # Here we connect to a SQLite DB file.
-        # also specify the app name of "models"
-        # which contain models from "automata.db
-        db_path = Path(GLib.get_user_data_dir()) / "automata.db"
-        await Tortoise.init(
-            db_url=f"sqlite://{db_path}", modules={"models": ["automata.models"]}
-        )
-        await Tortoise.generate_schemas(safe=True)
-
-        GLib.idle_add(self.get_active_window().show_toast, "Database initialized")
+    def on_shutdown(self, _app) -> None:
+        close_db()
+        logger.info("🛑 Application shutdown")
 
     def load_resources(self):
         provider = Gtk.CssProvider()

@@ -4,6 +4,7 @@ blueprints = custom_target(
         'ui/dashboard.blp',
         'ui/inbox.blp',
         'ui/shortcuts-dialog.blp',
+        'ui/task_list_row.blp',
         'ui/window.blp',
     ),
     output: '.',

@@ -1,0 +1,38 @@
+using Gtk 4.0;
+
+template $TaskListRow: Box {
+  spacing: 6;
+
+  CheckButton status_checkbox {}
+
+  Box {
+    margin-top: 6;
+    margin-bottom: 6;
+    spacing: 6;
+    orientation: vertical;
+
+    Label title {
+      ellipsize: end;
+      tooltip-text: bind title.label;
+      xalign: 0;
+
+      styles [
+        "caption-heading",
+      ]
+    }
+
+    Label description {
+      ellipsize: end;
+      tooltip-text: bind description.label;
+      xalign: 0;
+
+      styles [
+        "caption",
+      ]
+    }
+  }
+
+  Label due_date {
+    halign: end;
+  }
+}

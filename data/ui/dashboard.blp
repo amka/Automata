@@ -61,4 +61,18 @@ template $Dashboard: Box {
       }
     }
   }
+
+  ScrolledWindow {
+    ListView task_list_view {
+      factory: BuilderListItemFactory {
+        template ListItem {
+          child: Label {
+            label: bind template.item as <StringObject>.string;
+          };
+        }
+      };
+
+      model: SingleSelection selection {};
+    }
+  }
 }

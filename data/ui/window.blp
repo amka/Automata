@@ -8,14 +8,7 @@ template $AutomataWindow: Adw.ApplicationWindow {
   width-request: 360;
   height-request: 360;
 
-  ShortcutController {
-    scope: managed;
-
-    Shortcut {
-      action: 'activate';
-      trigger: '<Space>';
-    }
-  }
+  ShortcutController shortcut_controller {}
 
   Adw.Breakpoint {
     condition ("max-width: 600px")
@@ -44,7 +37,8 @@ template $AutomataWindow: Adw.ApplicationWindow {
                 icon-name: "list-add-symbolic";
               }
 
-              action-name: "app.task.create";
+              tooltip-markup: _("Add new task\n<small><b>A</b></small>");
+              action-name: "app.quick-capture";
               menu-model: create_menu;
             }
 
@@ -75,7 +69,7 @@ template $AutomataWindow: Adw.ApplicationWindow {
           Adw.HeaderBar {}
 
           Stack view_stack {
-            transition-type: slide_up_down;
+            transition-type: rotate_left_right;
           }
 
           // Adw.StatusPage {

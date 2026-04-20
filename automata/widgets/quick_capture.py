@@ -22,65 +22,93 @@
 #
 # SPDX-License-Identifier: MIT
 
-import gi
+from gi.repository import Adw, GLib, Gtk
 
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
-import threading
-
-from gi.repository import Adw, Gio, GLib, Gtk
-
-from automata.core.parser import parse_quick
+# from automata.core.db_worker import db_worker
+# from automata.models import Task
+from automata.core.models import Task
+from automata.services.task_service import TaskService
 
 
-class QuickCapture(Adw.Window):
+class QuickAddDialog(Adw.Dialog):
     def __init__(self):
-        super().__init__()
-        self.set_title("⚡ Quick Capture")
-        self.set_default_size(520, 110)
+        super().__init__(
+            title="Быстрое добавление задачи",
+            # body="Введите название задачи. Можно добавить детали ниже.",
+        )
 
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        # self.set_close_response("cancel")
+        # self.add_responses(
+        #     ("cancel", "Отмена"),
+        #     ("add", "Добавить в Inbox"),
+        #     ("add_process", "Добавить и обработать"),
+        # )
+        # self.set_response_appearance("add", Adw.ResponseAppearance.SUGGESTED)
 
-        self.entry = Adw.EntryRow(title="Задача: #теги !приоритет @исполнитель дата")
-        self.entry.set_activates_default(True)
-        box.append(self.entry)
+        # Основное поле
+        self.title_entry = Adw.EntryRow(title="Название задачи")
+        self.title_entry.set_activates_default(True)
 
-        btn = Gtk.Button(label="Сохранить")
-        btn.connect("clicked", lambda _: self.submit())
-        box.append(btn)
+        # Группа дополнительных полей
+        self.details_group = Adw.PreferencesGroup(title="Детали")
 
-        self.set_content(box)
-        self.connect("close-request", lambda w: w.hide() or True)
+        self.desc_row = Adw.EntryRow(title="Описание")
+        self.due_row = Adw.ActionRow(title="Срок")  # позже заменишь на Date selector
+        self.priority_row = Adw.ComboRow(title="Приоритет")
 
-    def submit(self):
-        text = self.entry.get_text().strip()
-        if not text:
+        self.details_group.add(self.desc_row)
+        self.details_group.add(self.due_row)
+        self.details_group.add(self.priority_row)
+
+        # Добавляем в content
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        box.append(self.title_entry)
+        box.append(self.details_group)
+        box.set_margin_bottom(12)
+        box.set_margin_top(12)
+        box.set_margin_start(12)
+        box.set_margin_end(12)
+
+        cancel_button = Gtk.Button(label="Отмена")
+        save_button = Gtk.Button(label="Сохранить")
+        cancel_button.connect("clicked", self._on_close_response)
+        save_button.connect("clicked", self._on_save_response)
+
+        bottom_bar = Gtk.Box(spacing=12)
+        bottom_bar.set_margin_bottom(12)
+        bottom_bar.set_margin_top(12)
+        bottom_bar.set_margin_start(12)
+        bottom_bar.set_margin_end(12)
+        bottom_bar.append(cancel_button)
+        bottom_bar.append(save_button)
+
+        content = Adw.ToolbarView(content=box)
+        content.add_top_bar(Adw.HeaderBar())
+        content.add_bottom_bar(bottom_bar)
+        self.set_child(content)
+
+    def _on_save_response(self, *args):
+        self._save_task(False)
+
+    def _on_close_response(self, *args):
+        self.close()
+
+    def _save_task(self, open_editor: bool):
+        title = self.title_entry.get_text().strip()
+        if not title:
             return
 
-        task = parse_quick(text)
-        # БД в отдельном потоке, UI обновляем через GLib
-        threading.Thread(target=self._save_bg, args=(task,), daemon=True).start()
-        self.entry.set_text("")
-        self.hide()
+        try:
+            task = TaskService.quick_create(
+                title=title, status="todo", priority=3, tags=[]
+            )
 
-    def _save_bg(self, task):
-        self.db.execute(
-            "INSERT INTO tasks (title, priority, quadrant, tags, assignee, due_date) VALUES (?,?,?,?,?,?)",
-            (
-                task["title"],
-                task["priority"],
-                task["quadrant"],
-                ",".join(task["tags"]),
-                task["assignee"],
-                task["due_date"],
-            ),
-        )
-        self.db.commit()
-        # Уведомление
-        GLib.idle_add(self._show_notification, task["title"])
+            GLib.idle_add(self._post_save, task)
+        except Exception as e:
+            print(f"Error: {e}")
 
-    def _show_notification(self, title):
-        notif = Gio.Notification.new("✅ Захвачено")
-        notif.set_body(f"{title} → Inbox/Delegate")
-        Gio.Application.get_default().send_notification("task_saved", notif)
+    def _post_save(self, task: Task):
+        # Обновить списки в Dashboard/Inbox
+        # Если open_editor — открыть детальную карточку задачи
+        self.close()
         return False
