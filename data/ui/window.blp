@@ -3,8 +3,8 @@ using Adw 1;
 
 template $AutomataWindow: Adw.ApplicationWindow {
   title: _("Automata");
-  default-width: 800;
-  default-height: 600;
+  default-width: 1400;
+  default-height: 900;
   width-request: 360;
   height-request: 360;
 
@@ -20,28 +20,16 @@ template $AutomataWindow: Adw.ApplicationWindow {
 
   content: Adw.ToastOverlay toast_overlay {
     Adw.OverlaySplitView split_view {
-      // show-content: true;
+      show-sidebar: bind toggle_sidebar_btn.active bidirectional;
       sidebar-width-fraction: 0.25;
 
       [sidebar]
       Adw.NavigationPage sidebar_page {
-        title: _("Sidebar");
+        title: _("Automata");
 
         Adw.ToolbarView {
           [top]
           Adw.HeaderBar {
-            [start]
-            Adw.SplitButton {
-              Adw.ButtonContent {
-                label: _("New Task");
-                icon-name: "list-add-symbolic";
-              }
-
-              tooltip-markup: _("Add new task\n<small><b>A</b></small>");
-              action-name: "app.quick-capture";
-              menu-model: create_menu;
-            }
-
             [end]
             MenuButton {
               primary: true;
@@ -58,6 +46,14 @@ template $AutomataWindow: Adw.ApplicationWindow {
               "navigation-sidebar",
             ]
           }
+
+          [bottom]
+          Adw.ActionRow {
+            activatable: true;
+            title: _("New Quarter Planning");
+            icon-name: "list-add-symbolic";
+            action-name: "win.quarter-planning.new";
+          }
         }
       }
 
@@ -66,7 +62,28 @@ template $AutomataWindow: Adw.ApplicationWindow {
 
         Adw.ToolbarView {
           [top]
-          Adw.HeaderBar {}
+          Adw.HeaderBar {
+            [start]
+            ToggleButton toggle_sidebar_btn {
+              icon-name: "sidebar-show-symbolic";
+              tooltip-text: _("Toggle Sidebar");
+            }
+
+            [start]
+            Button {
+              Adw.ButtonContent {
+                label: _("Capture");
+                icon-name: "list-add-symbolic";
+              }
+
+              tooltip-markup: _("Capture what matter\n<small><b>Ctrl+K</b></small>");
+              action-name: "app.quick-capture";
+
+              styles [
+                "suggested-action",
+              ]
+            }
+          }
 
           Stack view_stack {
             transition-duration: 50;

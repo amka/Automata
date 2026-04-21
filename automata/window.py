@@ -58,10 +58,11 @@ class AutomataWindow(Adw.ApplicationWindow):
 
         self._build_ui()
         self._setup_shortcuts()
+        self._connect_signals()
         # self._load_view("today")
 
         # Init shortcut controller
-        trigger = Gtk.ShortcutTrigger.parse_string("a")
+        trigger = Gtk.ShortcutTrigger.parse_string("<Primary>k")
         action = Gtk.CallbackAction.new(lambda *args: self.show_quick_add())
         shortcut = Gtk.Shortcut.new(trigger, action)
         self.shortcut_controller.add_shortcut(shortcut)
@@ -88,33 +89,22 @@ class AutomataWindow(Adw.ApplicationWindow):
             "is-fullscreen", self, "fullscreened", Gio.SettingsBindFlags.DEFAULT
         )
 
-    # def do_close_request(self) -> bool:
-    #     async def shutdown():
-    #         await Tortoise.close_connections()
-    #         # Останавливаем основной цикл, если нужно
-    #         logger.info("Tortoise-ORM shutdown")
-
-    #     asyncio.create_task(shutdown())
-    #     return False
+    def _connect_signals(self):
+        self.sidebar.connect("row-activated", self._on_sidebar_activated)
 
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
         self.toast_overlay.add_toast(toast)
 
     def _build_ui(self):
-        self.sidebar.connect("row-activated", self._on_sidebar_activated)
-
+        # Populate sidebar
         views = [
-            ("dashboard", "Dashboard", "Сфокусированный список на день"),
-            ("inbox", "Inbox", "Сырой поток задач"),
-            ("today", "Today", "Сегодня"),
-            ("upcoming", "Upcoming", "Ближайшие задачи"),
-            ("tasks", "Tasks", ""),
-            ("projects", "Projects", None),
-            ("calendar", "Calendar", ""),
-            ("notes", "Notes", ""),
-            ("oversight", "Oversight", "Контроль команд / проектов"),
-            ("reports", "Reports", ""),
+            ("pulse", "Pulse", "Dashboard"),
+            ("strategy", "Strategy", "Year + Quarter"),
+            ("portfolio", "Portfolio", "Projects"),
+            ("me", "Me", "Personal + Inbox"),
+            ("budget", "Budget", "Tasks"),
+            ("reports", "Reports", "Reports"),
         ]
         for view_id, title, desc in views:
             row = Adw.ActionRow(title=title, subtitle=desc)
@@ -124,18 +114,18 @@ class AutomataWindow(Adw.ApplicationWindow):
 
         # CONTENT
         dashboard = DashboardPage()
-        dashboard.view_id = "dashboard"
-        self.view_stack.add_titled(dashboard, "dashboard", "Dashboard")
+        dashboard.view_id = "pulse"
+        self.view_stack.add_titled(dashboard, "pulse", "Dashboard")
 
         inbox = InboxPage()
-        inbox.view_id = "inbox"
-        self.view_stack.add_titled(inbox, "inbox", "Inbox")
+        inbox.view_id = "strategy"
+        self.view_stack.add_titled(inbox, "strategy", "Inbox")
 
         projects_view = ProjectsPage()
         self.view_stack.add_titled(projects_view, "projects", "Projects")
 
         # Создаём страницы-списки
-        for view_id in ["today", "matrix", "delegated"]:
+        for view_id in ["portfolio", "me", "budget"]:
             page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
             page.set_spacing(8)
             page.set_margin_start(12)
@@ -151,6 +141,8 @@ class AutomataWindow(Adw.ApplicationWindow):
 
             self.view_stack.add_titled(page, view_id, view_id.capitalize())
             setattr(self, f"list_{view_id}", task_list)
+
+        self.sidebar.select_row(self.sidebar.get_row_at_index(0))
 
     def _on_sidebar_activated(self, listbox, row: Adw.ActionRow):
         # view_id = row.get_title().split(" ")[1].lower()
