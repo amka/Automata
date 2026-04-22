@@ -1,10 +1,8 @@
-from datetime import date, datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional
 
 import peewee as pw
 from gi.repository import GLib
-from playhouse.sqlite_ext import JSONField
 
 db_path = Path(GLib.get_user_data_dir()) / "automata.db"
 # База данных
@@ -23,73 +21,177 @@ class BaseModel(pw.Model):
     class Meta:
         database = db
 
+    created_at = pw.DateTimeField(default=datetime.now(timezone.utc))
+    updated_at = pw.DateTimeField(default=datetime.now(timezone.utc))
 
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.now(timezone.utc)
+        return super().save(*args, **kwargs)
+
+
+# === 1. ГОДОВЫЕ ЦЕЛИ (Annual Goals) ===
+class Goal(BaseModel):
+    id = pw.AutoField()
+    title = pw.CharField(max_length=255)
+    description = pw.TextField(null=True)
+    year = pw.IntegerField()  # например 2026
+    target_value = pw.FloatField(null=True)  # если есть числовая цель
+    current_value = pw.FloatField(default=0.0)
+    owner = pw.CharField(max_length=100, null=True)  # твой ID или имя
+    status = pw.CharField(
+        choices=[
+            ("active", "Active"),
+            ("completed", "Completed"),
+            ("paused", "Paused"),
+        ],
+        default="active",
+    )
+
+    # Health вычисляется автоматически при запросе (зелёный/жёлтый/красный)
+    @property
+    def progress(self):
+        if not self.target_value or self.target_value == 0:
+            return 0.0
+        return min(100.0, (self.current_value / self.target_value) * 100)
+
+    class Meta:
+        table_name = "goals"
+
+
+# === 2. КВАРТАЛЬНЫЕ OKR ===
+class Okr(BaseModel):
+    id = pw.AutoField()
+    goal = pw.ForeignKeyField(Goal, backref="okrs", on_delete="CASCADE")  # каскад вниз
+    quarter = pw.CharField(max_length=6)  # 'Q2-2026'
+    objective = pw.CharField(max_length=255)
+    description = pw.TextField(null=True)
+    owner = pw.CharField(max_length=100, null=True)
+
+    # Key Results будут отдельно или как JSON, но для простоты — отдельная модель ниже
+
+    class Meta:
+        table_name = "okrs"
+
+
+class KeyResult(BaseModel):
+    id = pw.AutoField()
+    okr = pw.ForeignKeyField(Okr, backref="key_results", on_delete="CASCADE")
+    title = pw.CharField(max_length=255)
+    target = pw.FloatField()
+    current = pw.FloatField(default=0.0)
+    unit = pw.CharField(max_length=50, null=True)  # %, млн руб, шт и т.д.
+
+    @property
+    def progress(self):
+        return min(100.0, (self.current / self.target) * 100) if self.target else 0.0
+
+    class Meta:
+        table_name = "key_results"
+
+
+# === 3. ПРОЕКТЫ / ИНИЦИАТИВЫ (Portfolio) ===
 class Project(BaseModel):
     id = pw.AutoField()
-    name = pw.CharField(max_length=255, index=True)
+    okr = pw.ForeignKeyField(
+        Okr, backref="projects", null=True, on_delete="SET NULL"
+    )  # может быть без OKR на старте
+    goal = pw.ForeignKeyField(Goal, backref="projects", null=True, on_delete="SET NULL")
+
+    title = pw.CharField(max_length=255)
     description = pw.TextField(null=True)
-    status = pw.CharField(max_length=20, default="active")
-    priority = pw.IntegerField(default=3)
     start_date = pw.DateField(null=True)
-    target_date = pw.DateField(null=True)
-    completed_at = pw.DateTimeField(null=True)
-    progress = pw.FloatField(default=0.0)
-    jira_board_key = pw.CharField(max_length=100, null=True)
-    gitlab_group_id = pw.CharField(max_length=100, null=True)
-    grafana_url = pw.CharField(max_length=500, null=True)
+    end_date = pw.DateField(null=True)
+    owner = pw.CharField(max_length=100)  # кто отвечает (директор направления)
 
-    # Для ручной сортировки (drag-and-drop)
-    order_index = pw.IntegerField(default=0, index=True)
-
-    created_at = pw.DateTimeField(default=datetime.now)
-    updated_at = pw.DateTimeField(default=datetime.now)
+    status = pw.CharField(
+        choices=[
+            ("not_started", "Not Started"),
+            ("in_progress", "In Progress"),
+            ("at_risk", "At Risk"),
+            ("completed", "Completed"),
+        ],
+        default="not_started",
+    )
 
     class Meta:
         table_name = "projects"
-        order_by = ("order_index", "target_date")  # дефолтная сортировка
 
-    def __str__(self):
-        return f"<{self.id}: {self.name}>"
+    @property
+    def progress(self):
+        # Авто-расчёт из задач (пример запроса ниже)
+        tasks = self.tasks
+        if not tasks:
+            return 0.0
+        completed = tasks.where(Task.status == "completed").count()
+        return (completed / tasks.count()) * 100 if tasks.count() > 0 else 0.0
 
 
+# === 4. ЗАДАЧИ (личные + делегированные) ===
 class Task(BaseModel):
-    title = pw.CharField(max_length=500)
-    description = pw.TextField(null=True)
-    status = pw.CharField(max_length=20, default="todo")
-    priority = pw.IntegerField(default=3)
-    eisenhower = pw.CharField(max_length=20, null=True)
-    due_date = pw.DateField(null=True)
-    start_date = pw.DateField(null=True)
-    completed_at = pw.DateTimeField(null=True)
-    time_estimate = pw.IntegerField(null=True)  # минут
-    time_spent = pw.IntegerField(default=0)
-
+    id = pw.AutoField()
     project = pw.ForeignKeyField(
-        Project, null=True, backref="tasks", on_delete="SET NULL"
+        Project, backref="tasks", null=True, on_delete="CASCADE"
     )
-    parent_task = pw.ForeignKeyField(
-        "self", null=True, backref="subtasks", on_delete="CASCADE"
+    okr = pw.ForeignKeyField(Okr, backref="tasks", null=True, on_delete="SET NULL")
+    goal = pw.ForeignKeyField(Goal, backref="tasks", null=True, on_delete="SET NULL")
+
+    title = pw.CharField(max_length=255)
+    description = pw.TextField(null=True)
+    assignee = pw.CharField(
+        max_length=100, null=True
+    )  # кто выполняет (ты или подчинённый)
+    is_personal = pw.BooleanField(default=False)  # твои личные задачи без проекта
+
+    due_date = pw.DateField(null=True)
+    reminder_date = pw.DateField(null=True)
+
+    status = pw.CharField(
+        choices=[
+            ("todo", "To Do"),
+            ("in_progress", "In Progress"),
+            ("blocked", "Blocked"),
+            ("completed", "Completed"),
+        ],
+        default="todo",
     )
-
-    jira_key = pw.CharField(max_length=50, null=True)
-    incident_id = pw.CharField(max_length=100, null=True)
-    tags = JSONField(default=list)  # список строк
-
-    created_at = pw.DateTimeField(default=datetime.now)
-    updated_at = pw.DateTimeField(default=datetime.now)
+    priority = pw.IntegerField(default=0)  # 0-высокий, можно сортировать
 
     class Meta:
         table_name = "tasks"
 
 
-class Note(BaseModel):
-    title = pw.CharField(max_length=255)
-    content = pw.TextField()
-    linked_type = pw.CharField(max_length=20, null=True)
-    linked_id = pw.IntegerField(null=True)
+# === 5. БЮДЖЕТ (сквозной слой) ===
+class BudgetEntry(BaseModel):
+    id = pw.AutoField()
+    # Может быть привязан к любому уровню (гибко)
+    goal = pw.ForeignKeyField(
+        Goal, backref="budget_entries", null=True, on_delete="CASCADE"
+    )
+    okr = pw.ForeignKeyField(
+        Okr, backref="budget_entries", null=True, on_delete="CASCADE"
+    )
+    project = pw.ForeignKeyField(
+        Project, backref="budget_entries", null=True, on_delete="CASCADE"
+    )
+    task = pw.ForeignKeyField(
+        Task, backref="budget_entries", null=True, on_delete="CASCADE"
+    )
 
-    created_at = pw.DateTimeField(default=datetime.utcnow)
-    updated_at = pw.DateTimeField(default=datetime.utcnow)
+    allocated = pw.DecimalField(
+        max_digits=15, decimal_places=2, default=0.0
+    )  # запланировано
+    spent = pw.DecimalField(max_digits=15, decimal_places=2, default=0.0)  # потрачено
+    forecast = pw.DecimalField(max_digits=15, decimal_places=2, default=0.0)  # прогноз
+    currency = pw.CharField(max_length=3, default="RUB")
+
+    category = pw.CharField(
+        max_length=100, null=True
+    )  # например "Разработка", "Лицензии"
+    note = pw.TextField(null=True)
 
     class Meta:
-        table_name = "notes"
+        table_name = "budget_entries"
+
+    @property
+    def variance(self):
+        return self.allocated - self.spent

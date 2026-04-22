@@ -23,10 +23,11 @@
 # SPDX-License-Identifier: MIT
 
 import threading
+from datetime import date
 
 from gi.repository import Adw, Gio, GLib, Gtk
 
-from automata.services import TaskService
+from automata.services import task_service
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/dashboard.ui")
@@ -46,8 +47,8 @@ class DashboardPage(Gtk.Box):
         # asyncio.create_task(self._load_tasks())
         pass
 
-    async def _load_tasks(self):
-        tasks = await TaskService.get_today_tasks()
+    def _load_tasks(self):
+        tasks = task_service.get_tasks_by_due_date(date.today())
 
         # Обновляем UI только в главном потоке
         GLib.idle_add(self._update_task_list, tasks)

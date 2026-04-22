@@ -28,7 +28,7 @@ from datetime import date
 from gi.repository import Adw, Gio, GLib, GObject, Gtk
 
 from automata.core.models import Task
-from automata.services import TaskService
+from automata.services import task_service
 from automata.widgets.task_list_row import TaskItem, TaskListRow
 
 
@@ -59,7 +59,7 @@ class InboxPage(Gtk.Box):
         self._thread.start()
 
     def _load_tasks(self):
-        tasks = TaskService.get_inbox_tasks()
+        tasks = task_service.get_personal_tasks()
         self.loading = False
 
         GLib.idle_add(self.list_store.remove_all)

@@ -22,14 +22,11 @@
 #
 # SPDX-License-Identifier: MIT
 
-from dis import hasarg
-from textwrap import shorten
 from typing import Dict
 
 from gi.repository import Adw, Gio, Gtk
 from loguru import logger
 
-from automata.services.project_service import project_service
 from automata.widgets.dashboard import DashboardPage
 from automata.widgets.inbox import InboxPage
 from automata.widgets.projects_page import ProjectsPage

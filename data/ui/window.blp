@@ -30,6 +30,27 @@ template $AutomataWindow: Adw.ApplicationWindow {
         Adw.ToolbarView {
           [top]
           Adw.HeaderBar {
+            show-title: false;
+
+            [start]
+            Box {
+              spacing: 6;
+              tooltip-markup: _("Your strategic assistant");
+
+              Image {
+                icon-name: "com.tenderowl.automata";
+                pixel-size: 24;
+              }
+
+              Label {
+                label: "Automata";
+
+                styles [
+                  "heading",
+                ]
+              }
+            }
+
             [end]
             MenuButton {
               primary: true;
@@ -67,6 +88,7 @@ template $AutomataWindow: Adw.ApplicationWindow {
             ToggleButton toggle_sidebar_btn {
               icon-name: "sidebar-show-symbolic";
               tooltip-text: _("Toggle Sidebar");
+              active: true;
             }
 
             [start]
@@ -82,6 +104,26 @@ template $AutomataWindow: Adw.ApplicationWindow {
               styles [
                 "suggested-action",
               ]
+            }
+
+            [end]
+            Box {
+              spacing: 6;
+
+              Revealer search_revealer {
+                reveal-child: false;
+                transition-type: swing_left;
+
+                SearchEntry {
+                  placeholder-text: _("Search");
+                }
+              }
+
+              ToggleButton {
+                icon-name: "edit-find-symbolic";
+                tooltip-text: _("Search");
+                active: bind search_revealer.reveal-child bidirectional;
+              }
             }
           }
 
