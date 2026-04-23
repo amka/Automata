@@ -2,10 +2,12 @@ blueprints = custom_target(
     'blueprints',
     input: files(
         'ui/dashboard.blp',
+        'ui/goals_page.blp',
         'ui/inbox.blp',
+        'ui/projects_page.blp',
+        'ui/setup-wizard.blp',
         'ui/shortcuts-dialog.blp',
         'ui/task_list_row.blp',
-        'ui/projects_page.blp',
         'ui/window.blp',
     ),
     output: '.',

@@ -22,15 +22,18 @@
 #
 # SPDX-License-Identifier: MIT
 
+from ast import Gt
 from typing import Dict
 
 from gi.repository import Adw, Gio, Gtk
 from loguru import logger
 
 from automata.widgets.dashboard import DashboardPage
+from automata.widgets.goals_page import GoalsPage
 from automata.widgets.inbox import InboxPage
 from automata.widgets.projects_page import ProjectsPage
 from automata.widgets.quick_capture import QuickAddDialog
+from automata.widgets.setup_wizard import SetupWizard
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/window.ui")
@@ -39,11 +42,13 @@ class AutomataWindow(Adw.ApplicationWindow):
 
     shortcut_controller: Gtk.ShortcutController = Gtk.Template.Child()
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
+    screens: Gtk.Stack = Gtk.Template.Child()
     split_view: Adw.OverlaySplitView = Gtk.Template.Child()
     sidebar_page: Adw.NavigationPage = Gtk.Template.Child()
     sidebar: Gtk.ListBox = Gtk.Template.Child()
     content_page: Adw.NavigationPage = Gtk.Template.Child()
     view_stack: Gtk.Stack = Gtk.Template.Child()
+    # pages_view: Adw.NavigationView = Gtk.Template.Child()
 
     settings: Gio.Settings
 
@@ -65,6 +70,12 @@ class AutomataWindow(Adw.ApplicationWindow):
         self.shortcut_controller.add_shortcut(shortcut)
 
         self._bind_settings()
+
+    @Gtk.Template.Callback()
+    def _on_begin_btn_clicked(self, _widget: Gtk.Widget):
+        wizard = SetupWizard()
+        # wizard.set_parent(self)
+        wizard.present(self)
 
     def show_quick_add(self):
         logger.info("Show quick add dialog")
@@ -113,13 +124,16 @@ class AutomataWindow(Adw.ApplicationWindow):
         dashboard = DashboardPage()
         dashboard.view_id = "pulse"
         self.view_stack.add_titled(dashboard, "pulse", "Dashboard")
+        # self.pages_view.add(dashboard)
 
-        inbox = InboxPage()
-        inbox.view_id = "strategy"
-        self.view_stack.add_titled(inbox, "strategy", "Inbox")
+        strategy_page = GoalsPage()
+        strategy_page.view_id = "strategy"
+        self.view_stack.add_titled(strategy_page, "strategy", "Strategy")
+        # self.pages_view.add(strategy_page)
 
         projects_view = ProjectsPage()
         self.view_stack.add_titled(projects_view, "projects", "Projects")
+        # self.pages_view.add(projects_view)
 
         # Создаём страницы-списки
         for view_id in ["portfolio", "me", "budget"]:
@@ -150,30 +164,6 @@ class AutomataWindow(Adw.ApplicationWindow):
         self._load_view(view_id)
 
     def _load_view(self, view_id: str):
-        # Маппинг навигации на фильтры БД
-        filters = {
-            "today": {
-                "quadrant": None,
-                "status": "active",
-            },  # Загружается в QuickCapture logic
-            "inbox": {"quadrant": 0, "status": "active"},
-            "matrix": {
-                "quadrant": None,
-                "status": "active",
-            },  # Пока flat-list, позже grid
-            "delegated": {"quadrant": 3, "status": "active"},
-            "projects": {"quadrant": None, "status": "active"},
-        }
-
-        # Обновляем заголовок
-        titles = {
-            "today": "Сегодня",
-            "inbox": "Inbox",
-            "matrix": "Матрица Эйзенхауэра",
-            "delegated": "Ожидание",
-            "projects": "Проекты",
-        }
-        self.content_page.set_title(titles.get(view_id, view_id))
         self.view_stack.set_visible_child_name(view_id)
 
         # Populate widget asyncronously if available

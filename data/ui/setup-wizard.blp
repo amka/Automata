@@ -1,0 +1,116 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SetupWizard: Adw.Dialog {
+  content-width: 800;
+  content-height: 600;
+  title: _("Setup Wizard");
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      show-title: false;
+
+      [start]
+      Button {
+        label: _("Skip Wizard");
+        clicked => $_on_skip_clicked();
+      }
+
+      [end]
+      Button {
+        label: _("Next");
+        clicked => $_on_next_clicked();
+      }
+    }
+
+    Box {
+      spacing: 24;
+      orientation: vertical;
+      // 1. Годовые цели → 2. Квартальные OKR → 3. Портфель проектов
+      Adw.Carousel carousel {
+        vexpand: true;
+        hexpand: true;
+
+        Adw.Clamp {
+          maximum-size: 600;
+
+          Box {
+            orientation: vertical;
+            spacing: 24;
+            hexpand: true;
+
+            Label {
+              label: _("1. Годовые цели");
+
+              styles [
+                "title-1",
+              ]
+            }
+
+            ScrolledWindow {
+              vexpand: true;
+
+              Adw.PreferencesGroup goals_list {
+                title: _("Year goals");
+              }
+            }
+
+            Box {
+              styles [
+                "linked",
+              ]
+
+              Entry goal_entry {
+                placeholder-text: _("Increase GMV up to 15%");
+                focusable: true;
+                receives-default: true;
+              }
+
+              Button {
+                label: _("Add");
+                clicked => $_on_goal_add_clicked();
+
+                styles [
+                  "suggested-action",
+                ]
+              }
+            }
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 24;
+          hexpand: true;
+
+          Label {
+            label: _("2. Квартальные OKR");
+
+            styles [
+              "title-1",
+            ]
+          }
+        }
+
+        Box {
+          orientation: vertical;
+          spacing: 12;
+          hexpand: true;
+
+          Label {
+            label: _("3. Портфель проектов");
+
+            styles [
+              "title-1",
+            ]
+          }
+        }
+      }
+
+      Adw.CarouselIndicatorDots {
+        carousel: carousel;
+      }
+    }
+  }
+}

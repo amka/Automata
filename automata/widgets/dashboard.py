@@ -31,7 +31,7 @@ from automata.services import task_service
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/dashboard.ui")
-class DashboardPage(Gtk.Box):
+class DashboardPage(Adw.NavigationPage):
     __gtype_name__ = "Dashboard"
 
     task_list_view: Gtk.ListView = Gtk.Template.Child()

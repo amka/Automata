@@ -1,78 +1,87 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $Dashboard: Box {
-  orientation: vertical;
-  spacing: 12;
-  margin-bottom: 12;
-  margin-start: 12;
-  margin-end: 12;
-  margin-top: 12;
+template $Dashboard: Adw.NavigationPage {
+  title: _("Dashboard");
 
-  Box {
-    orientation: horizontal;
-    spacing: 12;
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
 
-    Label {
-      label: _("Good day!");
-
-      styles [
-        "title-1",
-      ]
-    }
-  }
-
-  Grid {
     Box {
       orientation: vertical;
       spacing: 12;
+      margin-bottom: 12;
+      margin-start: 12;
+      margin-end: 12;
+      margin-top: 12;
 
-      Label {
-        label: _("Today’s Focus");
-        xalign: 0;
+      Box {
+        orientation: horizontal;
+        spacing: 12;
 
-        styles [
-          "title-4",
-        ]
+        Label welcome_label {
+          label: _("Good day!");
+
+          styles [
+            "title-1",
+          ]
+        }
       }
 
-      ListBox {
+      Grid {
         Box {
           orientation: vertical;
-          spacing: 8;
+          spacing: 12;
 
           Label {
-            label: _("Собрать стратегию в одном приложении");
-            ellipsize: end;
-            xalign: 0;
-          }
-
-          Label {
-            label: _("30 /04 /2026");
-            ellipsize: end;
+            label: _("Today’s Focus");
             xalign: 0;
 
             styles [
-              "dim-label",
-              "caption",
+              "title-4",
             ]
+          }
+
+          ListBox {
+            Box {
+              orientation: vertical;
+              spacing: 8;
+
+              Label {
+                label: _("Собрать стратегию в одном приложении");
+                ellipsize: end;
+                xalign: 0;
+              }
+
+              Label {
+                label: _("30 /04 /2026");
+                ellipsize: end;
+                xalign: 0;
+
+                styles [
+                  "dim-label",
+                  "caption",
+                ]
+              }
+            }
           }
         }
       }
-    }
-  }
 
-  ScrolledWindow {
-    ListView task_list_view {
-      factory: BuilderListItemFactory {
-        template ListItem {
-          child: Label {
-            label: bind template.item as <StringObject>.string;
+      ScrolledWindow {
+        ListView task_list_view {
+          factory: BuilderListItemFactory {
+            template ListItem {
+              child: Label {
+                label: bind template.item as <StringObject>.string;
+              };
+            }
           };
-        }
-      };
 
-      model: SingleSelection selection {};
+          model: SingleSelection selection {};
+        }
+      }
     }
   }
 }

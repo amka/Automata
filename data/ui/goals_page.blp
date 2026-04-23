@@ -1,0 +1,52 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $GoalsPage: Adw.NavigationPage {
+  // orientation: vertical;
+  title: _("Goals");
+
+  Box {
+    spacing: 12;
+    margin-bottom: 24;
+    margin-start: 24;
+    margin-end: 24;
+    margin-top: 24;
+    orientation: vertical;
+
+    Box {
+      orientation: horizontal;
+      spacing: 12;
+
+      Label {
+        label: _("Goals");
+
+        styles [
+          "title-1",
+        ]
+      }
+    }
+
+    ScrolledWindow {
+      vexpand: true;
+
+      Adw.ClampScrollable {
+        maximum-size: 800;
+
+        ListView list_view {
+          factory: SignalListItemFactory {
+            setup => $_setup_list_row();
+            bind => $_bind_list_row();
+          };
+
+          model: SingleSelection selection_model {
+            selection-changed => $_on_goal_selected();
+          };
+
+          styles [
+            "navigation-sidebar",
+          ]
+        }
+      }
+    }
+  }
+}
