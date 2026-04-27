@@ -1,14 +1,24 @@
-from datetime import date
-
 from loguru import logger
 
-from automata.core.models import (  # импортируем из models.py
+from automata.models import (  # импортируем из models.py
+    INDEX_STATEMENTS,
+    Attachment,
     BudgetEntry,
+    BudgetLine,
+    Commitment,
+    EmailAccount,
     Goal,
-    KeyResult,
-    Okr,
+    Initiative,
+    ItemTag,
+    Meeting,
+    MeetingAttendee,
+    MeetingNote,
+    MeetingTemplate,
+    Person,
     Project,
-    Task,
+    Quarter,
+    Tag,
+    WorkItem,
     db,
 )
 
@@ -17,11 +27,30 @@ def init_db():
     """Initialize the database and create tables if they don't exist"""
     db.connect()
     with db:
-        db.create_tables([Goal, Okr, KeyResult, Project, Task, BudgetEntry])
-        db.execute_sql("CREATE INDEX IF NOT EXISTS idx_task_due ON tasks(due_date);")
-        db.execute_sql(
-            "CREATE INDEX IF NOT EXISTS idx_project_owner ON projects(owner);"
+        db.create_tables(
+            [
+                Attachment,
+                BudgetEntry,
+                BudgetLine,
+                Commitment,
+                EmailAccount,
+                Goal,
+                Initiative,
+                ItemTag,
+                Meeting,
+                MeetingAttendee,
+                MeetingNote,
+                MeetingTemplate,
+                Person,
+                Project,
+                Quarter,
+                Tag,
+                WorkItem,
+            ]
         )
+        for stmt in INDEX_STATEMENTS:
+            db.execute_sql(stmt)
+
     logger.debug("✅ Database initialized")
     return db
 
