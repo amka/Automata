@@ -46,47 +46,54 @@ template $Sidebar: Adw.NavigationPage {
 
         ListBox sections_list_box {
           row-activated => $_on_section_selected();
-
+          // activate-on-single-click: true;
           Adw.ActionRow {
             name: "dashboard";
             title: _("Dashboard");
             icon-name: "dashboard";
+            activatable: true;
           }
 
           Adw.ActionRow {
             name: "today";
             title: _("Today");
             icon-name: "today";
+            activatable: true;
           }
 
           Adw.ActionRow {
             name: "inbox";
             title: _("Inbox");
             icon-name: "inbox";
+            activatable: true;
           }
 
           Adw.ActionRow {
             title: _("Commitments");
             name: "commitments";
             icon-name: "commitments";
+            activatable: true;
           }
 
           Adw.ActionRow {
             title: _("Projects");
             name: "projects";
             icon-name: "kanban";
+            activatable: true;
           }
 
           Adw.ActionRow {
             title: _("People");
-            name: "people";
+            name: "persons";
             icon-name: "users";
+            activatable: true;
           }
 
           Adw.ActionRow {
             title: _("Meetings");
             name: "meetings";
             icon-name: "calendar";
+            activatable: true;
           }
 
           styles [

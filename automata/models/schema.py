@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Final
 
@@ -32,21 +33,20 @@ db = pw.SqliteDatabase(
 )
 
 
-def _sqlite_now_text_field() -> pw.TextField:
-    return pw.TextField(
-        null=False,
-        constraints=[pw.SQL("DEFAULT (datetime('now'))")],
-    )
-
-
 class BaseModel(pw.Model):
+    created_at = pw.DateTimeField(default=datetime.now(timezone.utc))
+    updated_at = pw.DateTimeField(default=datetime.now(timezone.utc))
+
     class Meta:
         database = db
+
+    def save(self, *args, **kwargs):
+        self.updated_at = datetime.now(timezone.utc)
+        return super().save(*args, **kwargs)
 
 
 class SchemaVersion(BaseModel):
     version = pw.IntegerField(primary_key=True)
-    applied_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "schema_version"
@@ -55,7 +55,6 @@ class SchemaVersion(BaseModel):
 class AppState(BaseModel):
     key = pw.TextField(primary_key=True)
     value = pw.TextField(null=True)
-    updated_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "app_state"
@@ -72,7 +71,6 @@ class Person(BaseModel):
         default=False,
         constraints=[pw.Check("is_me IN (0, 1)")],
     )
-    created_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "people"
@@ -96,8 +94,6 @@ class Goal(BaseModel):
     )
     color = pw.TextField(null=True)
     sort_order = pw.IntegerField(default=0)
-    created_at = _sqlite_now_text_field()
-    updated_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "goals"
@@ -143,8 +139,6 @@ class Initiative(BaseModel):
         null=True,
         constraints=[pw.Check("progress_pct BETWEEN 0 AND 100")],
     )
-    created_at = _sqlite_now_text_field()
-    updated_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "initiatives"
@@ -191,8 +185,6 @@ class Project(BaseModel):
     start_date = pw.TextField(null=True)
     end_date = pw.TextField(null=True)
     description = pw.TextField(null=True)
-    created_at = _sqlite_now_text_field()
-    updated_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "projects"
@@ -241,8 +233,6 @@ class WorkItem(BaseModel):
     completed_at = pw.TextField(null=True)
     external_ref = pw.TextField(null=True)
     source = pw.TextField(default="manual")
-    created_at = _sqlite_now_text_field()
-    updated_at = _sqlite_now_text_field()
     deleted_at = pw.TextField(null=True)
 
     class Meta:
@@ -287,8 +277,6 @@ class Commitment(BaseModel):
         default=False,
         constraints=[pw.Check("reminder_sent IN (0, 1)")],
     )
-    created_at = _sqlite_now_text_field()
-    updated_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "commitments"
@@ -338,8 +326,6 @@ class Meeting(BaseModel):
     )
     agenda = pw.TextField(null=True)
     notes = pw.TextField(null=True)
-    created_at = _sqlite_now_text_field()
-    updated_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "meetings"
@@ -399,7 +385,6 @@ class MeetingNote(BaseModel):
         null=True,
         on_delete="SET NULL",
     )
-    created_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "meeting_notes"
@@ -443,7 +428,6 @@ class BudgetEntry(BaseModel):
         null=True,
         constraints=[pw.Check("quarter BETWEEN 1 AND 4")],
     )
-    created_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "budget_entries"
@@ -497,7 +481,6 @@ class Attachment(BaseModel):
     file_path = pw.TextField()
     file_size = pw.IntegerField(null=True)
     mime_type = pw.TextField(null=True)
-    created_at = _sqlite_now_text_field()
 
     class Meta:
         table_name = "attachments"

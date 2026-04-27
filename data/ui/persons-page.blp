@@ -1,0 +1,49 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $PersonsPage: Adw.NavigationPage {
+  title: _("Persons");
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {}
+
+    Box {
+      orientation: vertical;
+      spacing: 12;
+      margin-end: 12;
+      margin-top: 12;
+      margin-start: 12;
+      margin-bottom: 12;
+
+      ProgressBar loading_bar {
+        text: _("Loading…");
+
+        styles [
+          "osd",
+        ]
+      }
+
+      ScrolledWindow {
+        vexpand: true;
+
+        Adw.ClampScrollable {
+          maximum-size: 800;
+
+          ListView person_list_view {
+            factory: SignalListItemFactory {
+              bind => $_on_factory_bind();
+              setup => $_on_factory_setup();
+            };
+
+            model: MultiSelection selection {};
+
+            styles [
+              "navigation-sidebar",
+            ]
+          }
+        }
+      }
+    }
+  }
+}

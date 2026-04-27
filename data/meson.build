@@ -4,6 +4,7 @@ blueprints = custom_target(
         'ui/dashboard.blp',
         'ui/goals_page.blp',
         'ui/inbox.blp',
+        'ui/persons-page.blp',
         'ui/projects_page.blp',
         'ui/setup-wizard.blp',
         'ui/shortcuts-dialog.blp',

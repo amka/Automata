@@ -31,6 +31,7 @@ from loguru import logger
 from automata.widgets.dashboard import DashboardPage
 from automata.widgets.goals_page import GoalsPage
 from automata.widgets.inbox import InboxPage
+from automata.widgets.persons_page import PersonsPage
 from automata.widgets.projects_page import ProjectsPage
 from automata.widgets.quick_capture import QuickAddDialog
 from automata.widgets.setup_wizard import SetupWizard
@@ -59,7 +60,7 @@ class AutomataWindow(Adw.ApplicationWindow):
         # Хранилище UI-состояния
         self.task_widgets: Dict[int, Gtk.ListBoxRow] = {}
 
-        # self._build_ui()
+        self._build_ui()
         self._setup_shortcuts()
         self._connect_signals()
         # self._load_view("today")
@@ -107,29 +108,12 @@ class AutomataWindow(Adw.ApplicationWindow):
         self.toast_overlay.add_toast(toast)
 
     def _build_ui(self):
-        # Populate sidebar
-        views = [
-            ("pulse", "Pulse", "Dashboard"),
-            ("strategy", "Strategy", "Year + Quarter"),
-            ("portfolio", "Portfolio", "Projects"),
-            ("me", "Me", "Personal + Inbox"),
-            ("budget", "Budget", "Tasks"),
-            ("reports", "Reports", "Reports"),
-        ]
-        for view_id, title, desc in views:
-            row = Adw.ActionRow(title=title, subtitle=desc)
-            row.set_activatable(True)
-            row.view_id = view_id
-            self.sidebar.append(row)
-
         # CONTENT
         dashboard = DashboardPage()
-        dashboard.view_id = "pulse"
-        self.view_stack.add_titled(dashboard, "pulse", "Dashboard")
+        self.view_stack.add_titled(dashboard, "dashboard", "Dashboard")
         # self.pages_view.add(dashboard)
 
         strategy_page = GoalsPage()
-        strategy_page.view_id = "strategy"
         self.view_stack.add_titled(strategy_page, "strategy", "Strategy")
         # self.pages_view.add(strategy_page)
 
@@ -137,31 +121,35 @@ class AutomataWindow(Adw.ApplicationWindow):
         self.view_stack.add_titled(projects_view, "projects", "Projects")
         # self.pages_view.add(projects_view)
 
+        persons_page = PersonsPage()
+        self.view_stack.add_titled(persons_page, "persons", "Persons")
+        # self.pages_view.add(persons_page)
+
         # Создаём страницы-списки
-        for view_id in ["portfolio", "me", "budget"]:
-            page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-            page.set_spacing(8)
-            page.set_margin_start(12)
-            page.set_margin_end(12)
-            page.set_margin_top(8)
-            page.set_margin_bottom(8)
+        # for view_id in ["portfolio", "me", "budget"]:
+        #     page = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        #     page.set_spacing(8)
+        #     page.set_margin_start(12)
+        #     page.set_margin_end(12)
+        #     page.set_margin_top(8)
+        #     page.set_margin_bottom(8)
 
-            task_list = Gtk.ListBox()
-            task_list.set_selection_mode(Gtk.SelectionMode.NONE)
-            task_list.add_css_class("boxed-list")
-            task_list.connect("row-activated", self._on_task_activated)
-            page.append(task_list)
+        #     task_list = Gtk.ListBox()
+        #     task_list.set_selection_mode(Gtk.SelectionMode.NONE)
+        #     task_list.add_css_class("boxed-list")
+        #     task_list.connect("row-activated", self._on_task_activated)
+        #     page.append(task_list)
 
-            self.view_stack.add_titled(page, view_id, view_id.capitalize())
-            setattr(self, f"list_{view_id}", task_list)
+        #     self.view_stack.add_titled(page, view_id, view_id.capitalize())
+        #     setattr(self, f"list_{view_id}", task_list)
 
         # self.sidebar.select_row(self.sidebar.get_row_at_index(0))
 
-    def _on_sidebar_activated(self, listbox, row: Adw.ActionRow):
+    def _on_sidebar_activated(self, listbox, section_name: str):
         # view_id = row.get_title().split(" ")[1].lower()
         # if "сегодня" in view_id:
         #     view_id = "today"
-        view_id = row.view_id
+        view_id = section_name
         logger.info(f"Sidebar activated: {view_id}")
         self._load_view(view_id)
 

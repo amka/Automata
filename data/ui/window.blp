@@ -71,17 +71,15 @@ template $AutomataWindow: Adw.ApplicationWindow {
 
           Adw.NavigationPage content_page {
             title: _("Сегодня");
-
-            Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {}
-
-              Stack view_stack {
-                transition-duration: 50;
-                transition-type: crossfade;
-              }
+            //   Adw.ToolbarView {
+            //     [top]
+            //     Adw.HeaderBar {}
+            Stack view_stack {
+              transition-duration: 50;
+              transition-type: crossfade;
             }
 
+            // }
             // Adw.ToolbarView {
             //   [top]
             //   Adw.HeaderBar {
