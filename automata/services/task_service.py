@@ -28,7 +28,7 @@ from typing import List, Optional
 
 from gi.repository import GObject
 
-from automata.core.models import Task, db
+from automata.models import Task, db
 
 
 class TaskSignal(enum.Enum):
@@ -64,7 +64,7 @@ class TaskService(GObject.GObject):
     def get_all_tasks(
         self,
         project_id: Optional[int] = None,
-        okr_id: Optional[int] = None,
+        importance: Optional[int] = None,
         goal_id: Optional[int] = None,
         status: Optional[str] = None,
         assignee: Optional[str] = None,
@@ -73,17 +73,17 @@ class TaskService(GObject.GObject):
         query = Task.select()
         if project_id:
             query = query.where(Task.project == project_id)
-        if okr_id:
-            query = query.where(Task.okr == okr_id)
-        if goal_id:
-            query = query.where(Task.goal == goal_id)
+        if importance:
+            query = query.where(Task.importance == importance)
+        # if goal_id:
+        #     query = query.where(Task.goal == goal_id)
         if status:
             query = query.where(Task.status == status)
-        if assignee:
-            query = query.where(Task.assignee == assignee)
-        if is_personal is not None:
-            query = query.where(Task.is_personal == is_personal)
-        return list(query.order_by(Task.priority.desc(), Task.due_date))
+        # if assignee:
+        #     query = query.where(Task.assignee == assignee)
+        # if is_personal is not None:
+        #     query = query.where(Task.is_personal == is_personal)
+        return list(query.order_by(Task.importance.desc(), Task.due_date))
 
     def get_task_by_id(self, task_id: int) -> Optional[Task]:
         return Task.get_or_none(Task.id == task_id)
@@ -140,15 +140,15 @@ class TaskService(GObject.GObject):
     def get_personal_tasks(self) -> List[Task]:
         return list(
             Task.select()
-            .where(Task.is_personal)
-            .order_by(Task.priority.desc(), Task.due_date)
+            .where(Task.owner == 1)
+            .order_by(Task.importance.desc(), Task.due_date)
         )
 
     def get_assigned_tasks(self, assignee: str) -> List[Task]:
         return list(
             Task.select()
-            .where(Task.assignee == assignee)
-            .order_by(Task.priority.desc(), Task.due_date)
+            .where(Task.owner == assignee)
+            .order_by(Task.importance.desc(), Task.due_date)
         )
 
 

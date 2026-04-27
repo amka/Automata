@@ -1,0 +1,84 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SetupWizard: Adw.Dialog {
+  content-width: 800;
+  content-height: 600;
+  title: _("Setup Wizard");
+
+  Adw.ToastOverlay toast_overlay {
+    Adw.ToolbarView {
+      [top]
+      Adw.HeaderBar {
+        Button skip_button {
+          label: _("Skip Wizard");
+          clicked => $_on_skip_clicked();
+        }
+      }
+
+      Stack pages {
+        margin-bottom: 12;
+        margin-start: 12;
+        margin-top: 12;
+        margin-end: 12;
+        transition-type: crossfade;
+
+        StackPage {
+          name: "page-1";
+
+          child: $SetupWizardPage1 page1 {};
+        }
+
+        StackPage {
+          name: "page-2";
+
+          child: $SetupWizardPage2 page2 {};
+        }
+
+        StackPage {
+          name: "page-3";
+
+          child: $SetupWizardPage3 page3 {};
+        }
+
+        StackPage {
+          name: "page-4";
+
+          child: $SetupWizardPage4 page4 {};
+        }
+
+        StackPage {
+          name: "page-5";
+
+          child: $SetupWizardPage5 page5 {};
+        }
+      }
+
+      [bottom]
+      Box {
+        spacing: 12;
+        margin-start: 6;
+        margin-end: 6;
+        margin-top: 6;
+        margin-bottom: 6;
+
+        Button back_button {
+          label: _("Back");
+          halign: start;
+          clicked => $_on_back_clicked();
+        }
+
+        Button next_button {
+          label: _("Next");
+          halign: end;
+          hexpand: true;
+          clicked => $_on_next_clicked();
+
+          styles [
+            "suggested-action",
+          ]
+        }
+      }
+    }
+  }
+}

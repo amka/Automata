@@ -2,7 +2,12 @@
 <gresources>
   <gresource prefix="/com/tenderowl/automata">
     <file preprocess="xml-stripblanks">ui/window.ui</file>
-    <file preprocess="xml-stripblanks">ui/setup-wizard.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/setup-wizard.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-1.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-2.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-3.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-4.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-5.ui</file>
     <file preprocess="xml-stripblanks">ui/dashboard.ui</file>
     <file preprocess="xml-stripblanks">ui/inbox.ui</file>
     <file preprocess="xml-stripblanks">ui/sidebar.ui</file>

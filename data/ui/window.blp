@@ -24,7 +24,7 @@ template $AutomataWindow: Adw.ApplicationWindow {
       transition-type: slide_down;
 
       StackPage {
-        name: "welcome";
+        name: "setup";
 
         child: Adw.ToolbarView {
           [top]
@@ -41,7 +41,7 @@ template $AutomataWindow: Adw.ApplicationWindow {
           Adw.StatusPage {
             icon-name: "com.tenderowl.automata";
             title: _("Automata is ready");
-            description: _("«Let’s setup your control framework.»");
+            description: _("Let’s setup your control framework.");
 
             Adw.Clamp {
               maximum-size: 360;

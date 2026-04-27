@@ -1,0 +1,71 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SetupWizardPage2: Adw.Bin {
+  Adw.Clamp {
+    maximum-size: 480;
+
+    Box {
+      orientation: vertical;
+      spacing: 12;
+
+      Label {
+        label: _("Add people you are working with");
+        xalign: 0;
+
+        styles [
+          "title-2",
+        ]
+      }
+
+      SearchEntry {
+        placeholder-text: _("Contact name");
+        margin-bottom: 12;
+        search-changed => $_on_search_changed();
+
+        styles [
+          "card",
+        ]
+      }
+
+      Label {
+        label: _("or import from a CSV file");
+        xalign: 0;
+      }
+
+      Box {
+        spacing: 12;
+        homogeneous: true;
+
+        Button {
+          label: _("CSV");
+          clicked => $_on_csv_import_clicked();
+        }
+
+        Button {
+          label: _("vCard");
+          clicked => $_on_vcard_import_clicked();
+        }
+      }
+
+      ScrolledWindow {
+        vexpand: true;
+
+        ListView persons_list_view {
+          model: NoSelection selection {
+            model: FilterListModel filter_model {};
+          };
+
+          factory: SignalListItemFactory {
+            setup => $_on_item_setup();
+            bind => $_on_item_bind();
+          };
+
+          styles [
+            "boxed-list",
+          ]
+        }
+      }
+    }
+  }
+}

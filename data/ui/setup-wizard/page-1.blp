@@ -1,0 +1,42 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SetupWizardPage1: Adw.Bin {
+  Adw.Clamp {
+    maximum-size: 480;
+
+    Box {
+      orientation: vertical;
+      spacing: 12;
+
+      Label {
+        label: _("Let’s begin");
+
+        styles [
+          "title-2",
+        ]
+      }
+
+      ListBox {
+        styles [
+          "boxed-list-separate",
+        ]
+
+        Adw.EntryRow name_entry {
+          title: _("How should I call you?");
+          margin-bottom: 12;
+        }
+
+        Adw.EntryRow role_entry {
+          title: _("Your role?");
+          margin-bottom: 12;
+        }
+
+        Adw.EntryRow email_entry {
+          title: _("Email");
+          margin-bottom: 12;
+        }
+      }
+    }
+  }
+}

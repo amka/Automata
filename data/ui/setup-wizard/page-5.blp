@@ -1,0 +1,18 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SetupWizardPage5: Adw.Bin {
+  Adw.Clamp {
+    maximum-size: 480;
+
+    Adw.StatusPage {
+      title: _("We’re done!");
+      description: _("");
+      icon-name: "finish";
+
+      styles [
+        "title-2",
+      ]
+    }
+  }
+}

@@ -1,0 +1,45 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $SetupWizardPage3: Adw.Bin {
+  Adw.Clamp {
+    maximum-size: 480;
+
+    Box {
+      orientation: vertical;
+      spacing: 12;
+
+      Label {
+        label: _("Add Context");
+        xalign: 0;
+
+        styles [
+          "title-2",
+        ]
+      }
+
+      Label {
+        label: _("Automata understands Markdown and create tasks and notes from your notes.");
+        xalign: 0;
+      }
+
+      Button {
+        label: _("Select Folder with Notes");
+        clicked => $_on_folder_select_clicked();
+      }
+
+      Label {
+        label: _("or");
+
+        styles [
+          "dim-label",
+        ]
+      }
+
+      Button {
+        label: _("Skip");
+        action-name: "win.skip-onboarding";
+      }
+    }
+  }
+}

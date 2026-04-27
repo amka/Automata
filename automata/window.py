@@ -57,14 +57,18 @@ class AutomataWindow(Adw.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Хранилище UI-состояния
-        self.task_widgets: Dict[int, Gtk.ListBoxRow] = {}
+        self.settings = Gio.Settings(schema_id="com.tenderowl.automata")
+        self._bind_settings()
+
+        # Check if onboarding is completed and set initial screen
+        if not self.settings.get_boolean("onboarding-completed"):
+            self.screens.set_visible_child_name("setup")
+        else:
+            self.screens.set_visible_child_name("content")
 
         self._build_ui()
         self._setup_shortcuts()
         self._connect_signals()
-        # self._load_view("today")
-        self.screens.set_visible_child_name("content")
 
         # Init shortcut controller
         trigger = Gtk.ShortcutTrigger.parse_string("<Primary>k")
@@ -72,11 +76,9 @@ class AutomataWindow(Adw.ApplicationWindow):
         shortcut = Gtk.Shortcut.new(trigger, action)
         self.shortcut_controller.add_shortcut(shortcut)
 
-        self._bind_settings()
-
     @Gtk.Template.Callback()
     def _on_begin_btn_clicked(self, _widget: Gtk.Widget):
-        wizard = SetupWizard()
+        wizard = SetupWizard(self.settings)
         # wizard.set_parent(self)
         wizard.present(self)
 
@@ -86,7 +88,6 @@ class AutomataWindow(Adw.ApplicationWindow):
         dlg.present(self)
 
     def _bind_settings(self):
-        self.settings = Gio.Settings(schema_id="com.tenderowl.automata")
         self.settings.bind(
             "width", self, "default-width", Gio.SettingsBindFlags.DEFAULT
         )
