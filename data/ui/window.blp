@@ -34,7 +34,7 @@ template $AutomataWindow: Adw.ApplicationWindow {
             [end]
             MenuButton {
               icon-name: "open-menu-symbolic";
-              menu-model: primary_menu;
+              // menu-model: primary_menu;
             }
           }
 
@@ -67,59 +67,7 @@ template $AutomataWindow: Adw.ApplicationWindow {
           sidebar-width-fraction: 0.25;
 
           [sidebar]
-          Adw.NavigationPage sidebar_page {
-            title: _("Automata");
-
-            Adw.ToolbarView {
-              [top]
-              Adw.HeaderBar {
-                show-title: false;
-
-                [start]
-                Box {
-                  spacing: 6;
-                  tooltip-markup: _("Your strategic assistant");
-
-                  Image {
-                    icon-name: "com.tenderowl.automata";
-                    pixel-size: 24;
-                  }
-
-                  Label {
-                    label: "Automata";
-
-                    styles [
-                      "heading",
-                    ]
-                  }
-                }
-
-                [end]
-                MenuButton {
-                  primary: true;
-                  icon-name: "open-menu-symbolic";
-                  tooltip-text: _("Main Menu");
-                  menu-model: primary_menu;
-                }
-              }
-
-              ListBox sidebar {
-                selection-mode: single;
-
-                styles [
-                  "navigation-sidebar",
-                ]
-              }
-
-              [bottom]
-              Adw.ActionRow {
-                activatable: true;
-                title: _("New Quarter Planning");
-                icon-name: "list-add-symbolic";
-                action-name: "win.quarter-planning.new";
-              }
-            }
-          }
+          $Sidebar sidebar_page {}
 
           Adw.NavigationPage content_page {
             title: _("Сегодня");
@@ -183,25 +131,6 @@ template $AutomataWindow: Adw.ApplicationWindow {
       }
     }
   };
-}
-
-menu primary_menu {
-  section {
-    item {
-      label: _("_Preferences");
-      action: "app.preferences";
-    }
-
-    item {
-      label: _("_Keyboard Shortcuts");
-      action: "app.shortcuts";
-    }
-
-    item {
-      label: _("_About Automata");
-      action: "app.about";
-    }
-  }
 }
 
 menu create_menu {

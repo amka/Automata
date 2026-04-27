@@ -1,0 +1,118 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $Sidebar: Adw.NavigationPage {
+  title: _("Automata");
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      show-title: false;
+
+      [start]
+      Box {
+        spacing: 6;
+        tooltip-markup: _("Your strategic assistant");
+
+        Image {
+          icon-name: "com.tenderowl.automata";
+          pixel-size: 24;
+        }
+
+        Label {
+          label: "Automata";
+
+          styles [
+            "heading",
+          ]
+        }
+      }
+
+      [end]
+      MenuButton {
+        primary: true;
+        icon-name: "open-menu-symbolic";
+        tooltip-text: _("Main Menu");
+        menu-model: primary_menu;
+      }
+    }
+
+    Box {
+      orientation: vertical;
+      spacing: 12;
+
+      ScrolledWindow {
+        vexpand: true;
+
+        ListBox sections_list_box {
+          row-activated => $_on_section_selected();
+
+          Adw.ActionRow {
+            name: "dashboard";
+            title: _("Dashboard");
+            icon-name: "dashboard";
+          }
+
+          Adw.ActionRow {
+            name: "today";
+            title: _("Today");
+            icon-name: "today";
+          }
+
+          Adw.ActionRow {
+            name: "inbox";
+            title: _("Inbox");
+            icon-name: "inbox";
+          }
+
+          Adw.ActionRow {
+            title: _("Commitments");
+            name: "commitments";
+            icon-name: "commitments";
+          }
+
+          Adw.ActionRow {
+            title: _("Projects");
+            name: "projects";
+            icon-name: "kanban";
+          }
+
+          Adw.ActionRow {
+            title: _("People");
+            name: "people";
+            icon-name: "users";
+          }
+
+          Adw.ActionRow {
+            title: _("Meetings");
+            name: "meetings";
+            icon-name: "calendar";
+          }
+
+          styles [
+            "navigation-sidebar",
+          ]
+        }
+      }
+    }
+  }
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Preferences");
+      action: "app.preferences";
+    }
+
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "app.shortcuts";
+    }
+
+    item {
+      label: _("_About Automata");
+      action: "app.about";
+    }
+  }
+}

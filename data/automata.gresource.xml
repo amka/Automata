@@ -5,10 +5,18 @@
     <file preprocess="xml-stripblanks">ui/setup-wizard.ui</file>
     <file preprocess="xml-stripblanks">ui/dashboard.ui</file>
     <file preprocess="xml-stripblanks">ui/inbox.ui</file>
+    <file preprocess="xml-stripblanks">ui/sidebar.ui</file>
     <file preprocess="xml-stripblanks">ui/task_list_row.ui</file>
     <file preprocess="xml-stripblanks">ui/projects_page.ui</file>
     <file preprocess="xml-stripblanks">ui/goals_page.ui</file>
     <file preprocess="xml-stripblanks">ui/shortcuts-dialog.ui</file>
     <file>automata.css</file>
+    <file>icons/scalable/actions/calendar-symbolic.svg</file>
+    <file>icons/scalable/actions/commitments-symbolic.svg</file>
+    <file>icons/scalable/actions/dashboard-symbolic.svg</file>
+    <file>icons/scalable/actions/inbox-symbolic.svg</file>
+    <file>icons/scalable/actions/kanban-symbolic.svg</file>
+    <file>icons/scalable/actions/today-symbolic.svg</file>
+    <file>icons/scalable/actions/users-symbolic.svg</file>
   </gresource>
 </gresources>

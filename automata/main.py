@@ -98,6 +98,9 @@ class AutomataApplication(Adw.Application):
                 display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
             )
 
+            theme = Gtk.IconTheme.get_for_display(display)
+            theme.add_resource_path("/com/tenderowl/automata/icons")
+
     def on_about_action(self, *args):
         """Callback for the app.about action."""
         about = Adw.AboutDialog(

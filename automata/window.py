@@ -34,6 +34,7 @@ from automata.widgets.inbox import InboxPage
 from automata.widgets.projects_page import ProjectsPage
 from automata.widgets.quick_capture import QuickAddDialog
 from automata.widgets.setup_wizard import SetupWizard
+from automata.widgets.sidebar import Sidebar
 
 
 @Gtk.Template(resource_path="/com/tenderowl/automata/ui/window.ui")
@@ -44,8 +45,8 @@ class AutomataWindow(Adw.ApplicationWindow):
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
     screens: Gtk.Stack = Gtk.Template.Child()
     split_view: Adw.OverlaySplitView = Gtk.Template.Child()
-    sidebar_page: Adw.NavigationPage = Gtk.Template.Child()
-    sidebar: Gtk.ListBox = Gtk.Template.Child()
+    sidebar_page: Sidebar = Gtk.Template.Child()
+    # sidebar: Gtk.ListBox = Gtk.Template.Child()
     content_page: Adw.NavigationPage = Gtk.Template.Child()
     view_stack: Gtk.Stack = Gtk.Template.Child()
     # pages_view: Adw.NavigationView = Gtk.Template.Child()
@@ -58,10 +59,11 @@ class AutomataWindow(Adw.ApplicationWindow):
         # Хранилище UI-состояния
         self.task_widgets: Dict[int, Gtk.ListBoxRow] = {}
 
-        self._build_ui()
+        # self._build_ui()
         self._setup_shortcuts()
         self._connect_signals()
         # self._load_view("today")
+        self.screens.set_visible_child_name("content")
 
         # Init shortcut controller
         trigger = Gtk.ShortcutTrigger.parse_string("<Primary>k")
@@ -98,7 +100,7 @@ class AutomataWindow(Adw.ApplicationWindow):
         )
 
     def _connect_signals(self):
-        self.sidebar.connect("row-activated", self._on_sidebar_activated)
+        self.sidebar_page.connect("section-selected", self._on_sidebar_activated)
 
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
@@ -153,7 +155,7 @@ class AutomataWindow(Adw.ApplicationWindow):
             self.view_stack.add_titled(page, view_id, view_id.capitalize())
             setattr(self, f"list_{view_id}", task_list)
 
-        self.sidebar.select_row(self.sidebar.get_row_at_index(0))
+        # self.sidebar.select_row(self.sidebar.get_row_at_index(0))
 
     def _on_sidebar_activated(self, listbox, row: Adw.ActionRow):
         # view_id = row.get_title().split(" ")[1].lower()

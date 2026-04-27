@@ -7,6 +7,7 @@ blueprints = custom_target(
         'ui/projects_page.blp',
         'ui/setup-wizard.blp',
         'ui/shortcuts-dialog.blp',
+        'ui/sidebar.blp',
         'ui/task_list_row.blp',
         'ui/window.blp',
     ),
