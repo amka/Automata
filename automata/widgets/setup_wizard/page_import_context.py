@@ -31,9 +31,11 @@ from loguru import logger
 from automata.services import note_service, task_service
 
 
-@Gtk.Template(resource_path="/com/tenderowl/automata/ui/setup-wizard/page-3.ui")
-class SetupWizardPage3(Adw.Bin):
-    __gtype_name__ = "SetupWizardPage3"
+@Gtk.Template(
+    resource_path="/com/tenderowl/automata/ui/setup-wizard/page-import-context.ui"
+)
+class SetupWizardImportContextPage(Adw.Bin):
+    __gtype_name__ = "SetupWizardImportContextPage"
 
     def __init__(self):
         super().__init__()

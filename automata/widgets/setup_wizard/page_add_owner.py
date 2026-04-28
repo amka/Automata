@@ -31,12 +31,42 @@ from automata.services.person_service import person_service
 from automata.widgets.persons_page import PersonItem
 
 
-@Gtk.Template(resource_path="/com/tenderowl/automata/ui/setup-wizard/page-5.ui")
-class SetupWizardPage5(Adw.Bin):
-    __gtype_name__ = "SetupWizardPage5"
+@Gtk.Template(resource_path="/com/tenderowl/automata/ui/setup-wizard/page-add-owner.ui")
+class SetupWizardAddOwnerPage(Adw.Bin):
+    __gtype_name__ = "SetupWizardAddOwnerPage"
+
+    name_entry: Adw.EntryRow = Gtk.Template.Child()
+    role_entry: Adw.EntryRow = Gtk.Template.Child()
+    email_entry: Adw.EntryRow = Gtk.Template.Child()
 
     def __init__(self):
         super().__init__()
 
     def submit(self):
-        pass
+        self.name_entry.remove_css_class("error")
+        self.name_entry
+        self.email_entry.remove_css_class("error")
+
+        user_name = self.name_entry.get_text().strip()
+        user_role = self.role_entry.get_text().strip()
+        user_email = self.email_entry.get_text().strip()
+
+        if not user_name:
+            # self.name_entry.add_suffix(Gtk.Image(icon_name="dialog-warning-symbolic"))
+            self.name_entry.add_css_class("error")
+            return
+
+        if not self._validate_email(user_email):
+            # self.email_entry.add_suffix(Gtk.Image(icon_name="dialog-warning-symbolic"))
+            self.email_entry.add_css_class("error")
+            return
+
+        person_service.add_person(
+            name=user_name, role=user_role, email=user_email, is_me=True
+        )
+
+    def _validate_email(self, email: str) -> bool:
+        import re
+
+        pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+        return re.match(pattern, email) is not None

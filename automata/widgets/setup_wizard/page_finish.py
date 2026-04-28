@@ -24,25 +24,16 @@
 
 from gettext import gettext as _
 
-from gi.repository import Adw, Gio, GObject, Gtk
+from gi.repository import Adw, Gtk
 from loguru import logger
 
-from automata.services.person_service import person_service
-from automata.widgets.persons_page import PersonItem
 
-
-@Gtk.Template(resource_path="/com/tenderowl/automata/ui/setup-wizard/page-4.ui")
-class SetupWizardPage4(Adw.Bin):
-    __gtype_name__ = "SetupWizardPage4"
-
-    goal_entry: Adw.EntryRow = Gtk.Template.Child()
+@Gtk.Template(resource_path="/com/tenderowl/automata/ui/setup-wizard/page-finish.ui")
+class SetupWizardFinishPage(Adw.Bin):
+    __gtype_name__ = "SetupWizardFinishPage"
 
     def __init__(self):
         super().__init__()
 
     def submit(self):
         pass
-
-    @Gtk.Template.Callback()
-    def _on_goal_entry_apply(self, entry):
-        goal = self.goal_entry.get_text()

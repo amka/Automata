@@ -32,9 +32,11 @@ from automata.services.person_service import PersonSignal, person_service
 from automata.widgets.persons_page import PersonItem
 
 
-@Gtk.Template(resource_path="/com/tenderowl/automata/ui/setup-wizard/page-2.ui")
-class SetupWizardPage2(Adw.Bin):
-    __gtype_name__ = "SetupWizardPage2"
+@Gtk.Template(
+    resource_path="/com/tenderowl/automata/ui/setup-wizard/page-import-contacts.ui"
+)
+class SetupWizardImportContactsPage(Adw.Bin):
+    __gtype_name__ = "SetupWizardImportContactsPage"
 
     # Page 2
     persons_list_view: Gtk.ListView = Gtk.Template.Child()

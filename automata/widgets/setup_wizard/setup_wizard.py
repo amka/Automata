@@ -27,13 +27,12 @@ from gettext import gettext as _
 from gi.repository import Adw, Gio, GObject, Gtk
 from loguru import logger
 
-from automata.services.person_service import person_service
 from automata.widgets.setup_wizard import (
-    SetupWizardPage1,
-    SetupWizardPage2,
-    SetupWizardPage3,
-    SetupWizardPage4,
-    SetupWizardPage5,
+    SetupWizardAddOwnerPage,
+    SetupWizardFinishPage,
+    SetupWizardImportContactsPage,
+    SetupWizardImportContextPage,
+    SetupWizardSetGoalsPage,
 )
 
 
@@ -43,11 +42,11 @@ class SetupWizard(Adw.Dialog):
 
     toast_overlay: Adw.ToastOverlay = Gtk.Template.Child()
     pages: Gtk.Stack = Gtk.Template.Child()
-    page1: SetupWizardPage1 = Gtk.Template.Child()
-    page2: SetupWizardPage2 = Gtk.Template.Child()
-    page3: SetupWizardPage3 = Gtk.Template.Child()
-    page4: SetupWizardPage4 = Gtk.Template.Child()
-    page5: SetupWizardPage5 = Gtk.Template.Child()
+    page1: SetupWizardAddOwnerPage = Gtk.Template.Child()
+    page2: SetupWizardImportContactsPage = Gtk.Template.Child()
+    page3: SetupWizardImportContextPage = Gtk.Template.Child()
+    page4: SetupWizardSetGoalsPage = Gtk.Template.Child()
+    page5: SetupWizardFinishPage = Gtk.Template.Child()
 
     def __init__(self, settings: Gio.Settings):
         super().__init__()

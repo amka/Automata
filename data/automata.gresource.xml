@@ -3,11 +3,15 @@
   <gresource prefix="/com/tenderowl/automata">
     <file preprocess="xml-stripblanks">ui/window.ui</file>
     <file preprocess="xml-stripblanks">ui/setup-wizard/setup-wizard.ui</file>
-    <file preprocess="xml-stripblanks">ui/setup-wizard/page-1.ui</file>
-    <file preprocess="xml-stripblanks">ui/setup-wizard/page-2.ui</file>
-    <file preprocess="xml-stripblanks">ui/setup-wizard/page-3.ui</file>
-    <file preprocess="xml-stripblanks">ui/setup-wizard/page-4.ui</file>
-    <file preprocess="xml-stripblanks">ui/setup-wizard/page-5.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-add-owner.ui</file>
+    <file
+            preprocess="xml-stripblanks"
+        >ui/setup-wizard/page-import-contacts.ui</file>
+    <file
+            preprocess="xml-stripblanks"
+        >ui/setup-wizard/page-import-context.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-set-goals.ui</file>
+    <file preprocess="xml-stripblanks">ui/setup-wizard/page-finish.ui</file>
     <file preprocess="xml-stripblanks">ui/dashboard.ui</file>
     <file preprocess="xml-stripblanks">ui/inbox.ui</file>
     <file preprocess="xml-stripblanks">ui/sidebar.ui</file>

@@ -30,7 +30,6 @@ from loguru import logger
 
 from automata.widgets.dashboard import DashboardPage
 from automata.widgets.goals_page import GoalsPage
-from automata.widgets.inbox import InboxPage
 from automata.widgets.persons_page import PersonsPage
 from automata.widgets.projects_page import ProjectsPage
 from automata.widgets.quick_capture import QuickAddDialog
